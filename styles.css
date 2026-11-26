@@ -41,11 +41,16 @@
   --header-h: 64px;
 
   /* Bottom tab bar: the bar itself is the frosted white face, and the one
-     active tab sits on a soft violet pill. */
-  --tab-pill: #ece2fb;
-  --tab-pill-line: color-mix(in srgb, var(--violet) 14%, transparent);
+     active tab sits on a violet pill. The pill, its hairline and the two tab
+     inks are stated as fixed colors rather than mixed from --muted, because
+     the bar has to stay legible on both the white face and the dark focus
+     face: the old muted grey read as washed out on a phone at arm's length. */
+  --tab-pill: #eae1fb;
+  --tab-pill-line: rgba(102, 61, 173, .22);
+  --tab-ink: #4b4662;
+  --tab-ink-active: #4e2a96;
   --tabbar-face: rgba(255, 255, 255, .96);
-  --tabbar-line: rgba(100, 68, 159, .12);
+  --tabbar-line: rgba(100, 68, 159, .18);
   --tabbar-shadow: 0 -10px 24px -18px rgba(60, 44, 96, .45);
   /* Air under the tab labels. Android's 3-button navigation bar (~48dp) is
      drawn OVER an edge-to-edge WebView while env(safe-area-inset-bottom)
@@ -867,7 +872,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   border: 0;
   border-radius: 16px;
   background: transparent;
-  font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; color: var(--muted);
+  font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; color: var(--tab-ink);
   transition: color .18s ease, transform .12s ease;
 }
 .tab span {
@@ -882,10 +887,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   padding: 3px 12px;
   border-radius: 999px;
   background: transparent;
-  fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+  fill: none; stroke: currentColor; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round;
   transition: background .18s ease, box-shadow .18s ease, stroke-width .18s ease;
 }
-.tab.is-active { color: var(--violet-strong); }
+.tab.is-active { color: var(--tab-ink-active); }
 .tab.is-active svg {
   background: var(--tab-pill);
   box-shadow: inset 0 0 0 1px var(--tab-pill-line);
@@ -914,15 +919,22 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   --sage-soft: #1e2a24;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, .3), 0 14px 30px -22px rgba(0, 0, 0, .9);
 
-  /* The dark focus theme keeps a dark glass bar instead of the white one. */
-  --tab-pill: rgba(183, 154, 224, .16);
-  --tab-pill-line: rgba(183, 154, 224, .34);
+  /* The dark focus theme keeps a dark glass bar instead of the white one: the
+     pill and both inks are lifted so the same four labels still read against
+     the night surface, since the whole bar is dimmed a little further down. */
+  --tab-pill: rgba(183, 154, 224, .24);
+  --tab-pill-line: rgba(198, 173, 236, .44);
+  --tab-ink: #c6bade;
+  --tab-ink-active: #e6d8ff;
   --tabbar-face: rgba(16, 12, 25, .96);
-  --tabbar-line: #2a2138;
+  --tabbar-line: #362a49;
   --tabbar-shadow: 0 -10px 24px -18px rgba(0, 0, 0, .9);
 }
-.phone-frame.focus-mode .app-header,
-.phone-frame.focus-mode .tabbar { opacity: .55; }
+/* Focus mode steps the chrome back, but at .55 the whole tab bar sank into the
+   night surface and its labels went grey and unreadable; the header keeps the
+   quiet .55 while the bar holds enough presence to still be a navigation. */
+.phone-frame.focus-mode .app-header { opacity: .55; }
+.phone-frame.focus-mode .tabbar { opacity: .78; }
 .phone-frame.focus-mode .seg-row,
 .phone-frame.focus-mode .rec-note,
 .phone-frame.focus-mode .mystery-strip,
