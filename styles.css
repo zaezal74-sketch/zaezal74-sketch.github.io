@@ -17,6 +17,12 @@
   --line: #d8caf2;
   --line-soft: #e6dbf9;
 
+  /* The hero's question line sits directly under the greeting, so it needs
+     enough ink to read as a real sentence on a phone at arm's length. --muted
+     was too faint there; this is a violet-leaning near-ink rather than black,
+     and focus mode lifts it for the night surface. */
+  --hero-sub-ink: #3d3556;
+
   --violet: #64449f;
   --violet-strong: #46317f;
   --violet-soft: #ece2fb;
@@ -48,7 +54,7 @@
   --tab-pill: #eae1fb;
   --tab-pill-line: rgba(102, 61, 173, .22);
   --tab-ink: #4b4662;
-  --tab-ink-active: #4e2a96;
+  --tab-ink-active: #3f1f84;
   --tabbar-face: rgba(255, 255, 255, .96);
   --tabbar-line: rgba(100, 68, 159, .18);
   --tabbar-shadow: 0 -10px 24px -18px rgba(60, 44, 96, .45);
@@ -229,10 +235,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .view-sub { font-size: 12.5px; color: var(--muted); margin-top: 5px; line-height: 1.45; }
 
 /* -------------------------------------------------------------------- hero */
-.hero { padding: 4px 2px 16px; }
+.hero { padding: 4px 2px 18px; }
 .date-line { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
-.hero h2 { font-size: 23px; font-weight: 800; letter-spacing: -.025em; line-height: 1.32; margin-top: 8px; }
-.hero-sub { font-size: 14px; color: var(--muted); margin-top: 7px; }
+/* 800 at -.025em read as a heavy block on the home screen ("너무 답답해").
+   One step down to 600, a touch smaller at 21px, and near-neutral tracking
+   with a taller line so the greeting feels calm and airy instead of dense. */
+.hero h2 { font-size: 21px; font-weight: 600; letter-spacing: -.006em; line-height: 1.44; margin-top: 9px; }
+/* The question right below carries the eye, so it is crisper than body muted:
+   fuller ink, 600, and 15px rather than a faint 14px whisper. */
+.hero-sub { font-size: 15px; font-weight: 600; color: var(--hero-sub-ink); letter-spacing: -.002em; line-height: 1.45; margin-top: 8px; }
 
 /* ------------------------------------------------------------------- chips */
 .chip-grid {
@@ -890,11 +901,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   fill: none; stroke: currentColor; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round;
   transition: background .18s ease, box-shadow .18s ease, stroke-width .18s ease;
 }
-.tab.is-active { color: var(--tab-ink-active); }
-.tab.is-active svg {
+/* The current tab is not just tinted: 800 on the label and a 2.2 stroke on the
+   glyph, over a deeper --tab-ink-active, so it reads as the grounded one on a
+   phone at arm's length. The selector also covers aria-current="page", which
+   switchTab() sets on the same button. */
+.tab.is-active, .tab[aria-current="page"] { color: var(--tab-ink-active); font-weight: 800; }
+.tab.is-active svg, .tab[aria-current="page"] svg {
   background: var(--tab-pill);
   box-shadow: inset 0 0 0 1px var(--tab-pill-line);
-  stroke-width: 2;
+  stroke-width: 2.2;
 }
 .tab:active { transform: scale(.97); }
 
@@ -918,6 +933,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   --sage: #9dbba8;
   --sage-soft: #1e2a24;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, .3), 0 14px 30px -22px rgba(0, 0, 0, .9);
+  /* Same crispness as the daylight hero, lifted for the night face. */
+  --hero-sub-ink: #dcd2ec;
 
   /* The dark focus theme keeps a dark glass bar instead of the white one: the
      pill and both inks are lifted so the same four labels still read against
@@ -925,7 +942,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   --tab-pill: rgba(183, 154, 224, .24);
   --tab-pill-line: rgba(198, 173, 236, .44);
   --tab-ink: #c6bade;
-  --tab-ink-active: #e6d8ff;
+  --tab-ink-active: #efe4ff;
   --tabbar-face: rgba(16, 12, 25, .96);
   --tabbar-line: #362a49;
   --tabbar-shadow: 0 -10px 24px -18px rgba(0, 0, 0, .9);
@@ -1062,7 +1079,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .tab svg { width: 44px; height: 26px; padding: 2px 10px; }
   .app-main { padding: 14px 14px 22px; }
   .app-main.is-coach { padding-bottom: 0; }
-  .hero h2 { font-size: 21px; }
+  .hero h2 { font-size: 19.5px; }
   .prayer-text { font-size: 15.5px; }
   .chip-btn { font-size: 11px; }
   .vseg { font-size: 11px; min-height: 30px; padding: 0 5px; }
