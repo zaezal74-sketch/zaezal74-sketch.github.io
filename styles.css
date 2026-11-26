@@ -14,6 +14,9 @@
   --ink: #241c3a;
   --ink-2: #4a4066;
   --muted: #665879;
+  /* Scripture and prayer bodies read one step deeper than --ink, so a serif
+     line lands crisp on a phone instead of thinning out. */
+  --scripture-ink: #1c1430;
   --line: #d8caf2;
   --line-soft: #e6dbf9;
 
@@ -339,7 +342,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .verse-card { background: linear-gradient(180deg, var(--surface), var(--surface-2)); }
 .verse-text {
   font-family: var(--font-serif);
-  font-size: 15.5px; line-height: 1.8; color: var(--ink);
+  font-size: 15.5px; line-height: 1.8;
+  font-weight: 600; color: var(--scripture-ink);
   letter-spacing: -.01em;
 }
 .verse-ref { margin-top: 9px; font-size: 12px; font-weight: 700; color: var(--muted); }
@@ -668,7 +672,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   background: var(--surface-2);
   border-left: 3px solid var(--gold);
 }
-.verse-box .v-text { font-family: var(--font-serif); font-size: 13.5px; line-height: 1.75; }
+.verse-box .v-text { font-family: var(--font-serif); font-size: 13.5px; line-height: 1.75; font-weight: 600; color: var(--scripture-ink); }
 .verse-box .v-ref { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 6px; }
 .reply-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 13px; flex-wrap: wrap; }
 .reply-actions .btn { min-height: 42px; font-size: 13px; border-radius: 12px; padding: 0 14px; }
@@ -932,6 +936,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   --ink: #f3edf8;
   --ink-2: #ded5ea;
   --muted: #a096b4;
+  --scripture-ink: #fdfbff;
   --line: #2a2138;
   --line-soft: #221a2e;
   --violet: #b79ae0;
@@ -1053,7 +1058,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   }
 }
 .minute-step { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); text-align: center; }
-.minute-text { font-family: var(--font-serif); font-size: 15px; line-height: 1.8; text-align: center; color: var(--ink-2); margin: 6px 4px 14px; min-height: 0; }
+.minute-text { font-family: var(--font-serif); font-size: 15px; line-height: 1.8; text-align: center; font-weight: 600; color: var(--scripture-ink); margin: 6px 4px 14px; min-height: 0; }
 .sheet-actions { display: grid; gap: 8px; }
 
 /* Short phones (and a browser toolbar taking its share): keep the whole sheet —
