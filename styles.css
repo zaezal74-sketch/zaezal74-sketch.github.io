@@ -1005,7 +1005,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
      large empty band inside the card. */
   .sheet { border-radius: 28px; margin-bottom: 24px; max-width: 400px; padding: 8px 20px 22px; }
   .tabbar { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
-  .toast { bottom: calc(94px + env(safe-area-inset-bottom, 0px)); }
   .tab { padding-top: 7px; padding-bottom: 6px; }
 }
 @keyframes slideUp { from { transform: translateY(28px); opacity: .6; } to { transform: none; opacity: 1; } }
