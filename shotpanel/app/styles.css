@@ -77,6 +77,9 @@
   --message-ring: rgba(122, 88, 190, .16);
   --verse-ring: rgba(150, 112, 42, .14);
   --done-ring: rgba(184, 138, 54, .22);
+  --sheet-face: radial-gradient(120% 60% at 50% 0%, rgba(255, 255, 255, .75), transparent 62%),
+    linear-gradient(180deg, #fdfaff 0%, #f8f1fe 58%, #f1e7fc 100%);
+  --sheet-edge: rgba(255, 255, 255, .9);
 
   /* Satin for the primary and gold actions: the top edge catches light, the
      body runs two stops darker, and the bottom carries a hair of shade, which
@@ -974,8 +977,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   overflow-x: hidden;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   padding-bottom: 4px;
 }
+#view-coach .coach-thread::-webkit-scrollbar { display: none; }
 .thread-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 24px 8px; }
 
 .bubble-user {
@@ -1366,6 +1371,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   --message-ring: rgba(198, 173, 236, .16);
   --verse-ring: rgba(224, 184, 114, .18);
   --done-ring: rgba(224, 184, 114, .24);
+  --sheet-face: radial-gradient(120% 60% at 50% 0%, rgba(150, 110, 200, .16), transparent 62%),
+    linear-gradient(180deg, #171020 0%, #120c1a 60%, #0e0915 100%);
+  --sheet-edge: rgba(255, 255, 255, .07);
 
   /* The dark focus theme keeps a dark glass bar instead of the white one: the
      pill and both inks are lifted so the same four labels still read against
@@ -1381,7 +1389,20 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 /* Focus mode steps the chrome back, but at .55 the whole tab bar sank into the
    night surface and its labels went grey and unreadable; the header keeps the
    quiet .55 while the bar holds enough presence to still be a navigation. */
-.phone-frame.focus-mode .app-header { opacity: .55; }
+.phone-frame.focus-mode .app-header {
+  background: linear-gradient(180deg, rgba(26, 19, 38, .88) 0%, rgba(16, 11, 24, .74) 100%);
+  border-top-color: rgba(255, 255, 255, .05);
+  border-bottom-color: rgba(255, 255, 255, .06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 12px 26px -26px rgba(0, 0, 0, .9);
+  opacity: .7;
+}
+/* The daylight column glow is white; at night it would fog the dark surface,
+   so the same light is re-stated in violet. */
+.phone-frame.focus-mode .app-main {
+  background:
+    radial-gradient(120% 46% at 50% -6%, rgba(140, 110, 190, .18) 0%, rgba(140, 110, 190, 0) 62%),
+    radial-gradient(80% 40% at 88% 4%, rgba(224, 184, 114, .08) 0%, rgba(224, 184, 114, 0) 70%);
+}
 /* The night mode is for praying, not for looking at a photograph: the home
    plate dims to a low ember so the candles read as light rather than as a
    picture competing with the prayer. */
@@ -1431,7 +1452,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  background: var(--bg);
+  background: var(--sheet-face);
+  border-top: 1px solid var(--sheet-edge);
   border-radius: 28px 28px 0 0;
   padding: 8px 20px var(--sheet-pad-b);
   box-shadow: 0 -20px 50px -20px rgba(0, 0, 0, .5);
