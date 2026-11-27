@@ -984,7 +984,32 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   padding-bottom: 4px;
 }
 #view-coach .coach-thread::-webkit-scrollbar { display: none; }
-.thread-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 24px 8px; }
+.thread-empty {
+  margin: 4px 2px 0;
+  padding: 26px 22px 24px;
+  border-radius: 20px;
+  background: var(--card-face);
+  border: 1px solid var(--card-edge);
+  box-shadow: var(--card-shadow);
+  font-family: var(--font-serif);
+  font-size: 14.5px; line-height: 1.95; letter-spacing: -.005em;
+  color: var(--ink-2);
+  text-align: center;
+  word-break: keep-all; overflow-wrap: break-word;
+}
+/* The first visit to the coach used to be a bare grey line floating in an empty
+   column. The invitation now sits in the same pearl material the replies use,
+   under a small gold cross, so the screen reads as prepared rather than blank. */
+.thread-empty::before {
+  content: "✝";
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--gold);
+  opacity: .8;
+}
 
 .bubble-user {
   justify-self: end;
