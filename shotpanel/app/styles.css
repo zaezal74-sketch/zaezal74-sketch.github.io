@@ -61,6 +61,23 @@
     rgba(255, 255, 255, .6) 0 1px,
     rgba(255, 255, 255, 0) 1px 4px);
 
+  /* The few cards that carry their own tint do it through these, so the night
+     face can swap every surface in one place instead of chasing selectors. */
+  --message-face: radial-gradient(120% 90% at 100% 0%, rgba(122, 88, 190, .16), transparent 62%),
+    linear-gradient(166deg, #fffdfb 0%, #fbf5ff 52%, #f2eaff 100%);
+  --verse-face: linear-gradient(180deg, #fffdfa 0%, #fbf6ff 62%, #f5edfe 100%);
+  --feedback-face: linear-gradient(166deg, #fffdfa 0%, #fbf7ff 56%, #f3ebfd 100%);
+  --solidarity-face: radial-gradient(120% 70% at 50% 0%, rgba(150, 112, 214, .14), transparent 62%),
+    linear-gradient(180deg, #fffdfa 0%, #fbf5ff 56%, #f4ecfd 100%);
+  --done-face: radial-gradient(120% 80% at 50% -10%, rgba(224, 184, 114, .22), transparent 62%),
+    linear-gradient(180deg, #fffdf7 0%, #fdf6ea 55%, #f8efdf 100%);
+  --badge-face: linear-gradient(172deg, #fdf2d9, #f6e6c3 60%, #eed9a9);
+  --chip-on-face: linear-gradient(170deg, #f4ecff, #e9dcfb);
+  --gold-tint-face: linear-gradient(172deg, #fdf3dd, #f8e8c8 60%, #f1dcae);
+  --message-ring: rgba(122, 88, 190, .16);
+  --verse-ring: rgba(150, 112, 42, .14);
+  --done-ring: rgba(184, 138, 54, .22);
+
   /* Satin for the primary and gold actions: the top edge catches light, the
      body runs two stops darker, and the bottom carries a hair of shade, which
      is what makes a flat fill read as a button you can press. */
@@ -472,13 +489,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 
 .message-card {
-  background:
-    radial-gradient(120% 90% at 100% 0%, rgba(122, 88, 190, .16), transparent 62%),
-    linear-gradient(166deg, #fffdfb 0%, #fbf5ff 52%, #f2eaff 100%);
-  border-color: rgba(255, 255, 255, .92);
+  background: var(--message-face);
+  border-color: var(--card-edge);
 }
 .message-card::after {
-  box-shadow: inset 0 0 0 1px rgba(122, 88, 190, .16);
+  box-shadow: inset 0 0 0 1px var(--message-ring);
 }
 .message-text {
   font-size: 15px; line-height: 1.72; color: var(--ink-2); letter-spacing: -.005em;
@@ -495,9 +510,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .text-link.danger { color: var(--danger); margin-top: 4px; }
 .text-link:active { opacity: .65; }
 
-.verse-card { background: linear-gradient(180deg, #fffdfa 0%, #fbf6ff 62%, #f5edfe 100%); }
+.verse-card { background: var(--verse-face); }
 .verse-card::after {
-  box-shadow: inset 0 0 0 1px rgba(150, 112, 42, .14);
+  box-shadow: inset 0 0 0 1px var(--verse-ring);
 }
 .verse-text {
   font-family: var(--font-serif);
@@ -640,7 +655,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   transition: all .18s ease;
 }
 .chip-btn[aria-pressed="true"] {
-  background: linear-gradient(170deg, #f4ecff, #e9dcfb);
+  background: var(--chip-on-face);
   border-color: color-mix(in srgb, var(--violet) 26%, transparent);
   color: var(--violet-strong);
   box-shadow:
@@ -952,11 +967,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .done-card {
   text-align: center;
   border-color: var(--card-edge);
-  background:
-    radial-gradient(120% 80% at 50% -10%, rgba(224, 184, 114, .22), transparent 62%),
-    linear-gradient(180deg, #fffdf7 0%, #fdf6ea 55%, #f8efdf 100%);
+  background: var(--done-face);
 }
-.done-card::after { box-shadow: inset 0 0 0 1px rgba(184, 138, 54, .22); }
+.done-card::after { box-shadow: inset 0 0 0 1px var(--done-ring); }
 .done-mark { font-size: 30px; color: var(--gold); margin-bottom: 8px; }
 .done-card h3 { font-size: 17px; font-weight: 800; }
 .done-card p { font-size: 13px; color: var(--ink-2); line-height: 1.7; margin-top: 8px; }
@@ -1148,8 +1161,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .day-dots i.on.rosary { background: var(--gold); }
 .day-dots i.on.word { background: var(--sage); }
 
-.feedback-card { background: linear-gradient(166deg, #fffdfa 0%, #fbf7ff 56%, #f3ebfd 100%); }
-.feedback-card::after { box-shadow: inset 0 0 0 1px rgba(116, 82, 178, .14); }
+.feedback-card { background: var(--feedback-face); }
+.feedback-card::after { box-shadow: inset 0 0 0 1px var(--message-ring); }
 .feedback-card p { font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
 
 .pi-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -1157,7 +1170,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .badge {
   font-size: 10.5px; font-weight: 800; letter-spacing: .04em;
   padding: 4px 9px; border-radius: 999px;
-  background: linear-gradient(172deg, #fdf2d9, #f6e6c3 60%, #eed9a9);
+  background: var(--badge-face);
   color: #6f4f10;
   border: 1px solid rgba(173, 132, 56, .30);
   box-shadow: 0 1px 0 rgba(255, 255, 255, .85) inset, 0 4px 8px -6px rgba(120, 84, 20, .5);
@@ -1182,7 +1195,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .amount-chip.is-active {
   border-color: rgba(184, 138, 54, .45);
-  background: linear-gradient(172deg, #fdf3dd, #f8e8c8 60%, #f1dcae);
+  background: var(--gold-tint-face);
   color: #6d4f10;
   box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 0 0 1px rgba(184, 138, 54, .18), 0 8px 14px -12px rgba(120, 84, 20, .8);
 }
@@ -1221,11 +1234,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 .solidarity-card {
   text-align: center;
-  background:
-    radial-gradient(120% 70% at 50% 0%, rgba(150, 112, 214, .14), transparent 62%),
-    linear-gradient(180deg, #fffdfa 0%, #fbf5ff 56%, #f4ecfd 100%);
+  background: var(--solidarity-face);
 }
-.solidarity-card::after { box-shadow: inset 0 0 0 1px rgba(116, 82, 178, .16); }
+.solidarity-card::after { box-shadow: inset 0 0 0 1px var(--message-ring); }
 .solid-count { font-size: 38px; font-weight: 800; letter-spacing: -.03em; color: var(--violet-strong); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .solid-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .solid-mine { font-size: 12px; font-weight: 700; color: var(--gold); margin-top: 8px; }
@@ -1351,6 +1362,20 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   --satin-violet-line: rgba(255, 255, 255, .22);
   --hero-ink: #fbf7ff;
   --hero-ink-soft: rgba(240, 232, 250, .9);
+  --message-face: radial-gradient(120% 90% at 100% 0%, rgba(150, 112, 214, .20), transparent 62%),
+    var(--card-face);
+  --verse-face: var(--card-face);
+  --feedback-face: var(--card-face);
+  --solidarity-face: radial-gradient(120% 70% at 50% 0%, rgba(150, 112, 214, .18), transparent 62%),
+    var(--card-face);
+  --done-face: radial-gradient(120% 80% at 50% -10%, rgba(224, 184, 114, .14), transparent 62%),
+    var(--card-face);
+  --badge-face: linear-gradient(172deg, #3a2f1d, #322a1a 60%, #2b2417);
+  --chip-on-face: linear-gradient(170deg, #2b2044, #241a36);
+  --gold-tint-face: linear-gradient(172deg, #33291a, #2c2317 60%, #261e13);
+  --message-ring: rgba(198, 173, 236, .16);
+  --verse-ring: rgba(224, 184, 114, .18);
+  --done-ring: rgba(224, 184, 114, .24);
 
   /* The dark focus theme keeps a dark glass bar instead of the white one: the
      pill and both inks are lifted so the same four labels still read against
