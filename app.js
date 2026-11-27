@@ -772,6 +772,21 @@
     return (set && set.length ? "minute-" + key : "minute-default") + "-" + idx;
   }
 
+  // The recording knows how long the prayer really takes, which is often longer
+  // than the estimate drawn from its text. In the hands-free flow, let it finish
+  // rather than cutting it off mid-sentence — only ever extend, and only for the
+  // prayer the element is actually carrying.
+  function fitStepToRecording(a) {
+    if (!auto.on || !a || !isFinite(a.duration) || a.duration <= 0) return;
+    var name = rosaryAudioName();
+    if (name && a.src && a.src.indexOf(name + ".mp3") === -1) return;
+    var secs = a.duration / prayerAudioRate() + 1.2;
+    if (secs * 1000 > auto.duration) {
+      auto.duration = secs * 1000;
+      if (auto.elapsed > auto.duration - 100) auto.elapsed = Math.max(0, auto.duration - 100);
+    }
+  }
+
   // The one element, wired once. Its listeners outlive every prayer, so they
   // read the module state rather than closing over one step's variables — and
   // nothing piles up on the element as the rosary moves along.
@@ -783,16 +798,7 @@
     a.preload = "auto";
     a.addEventListener("loadedmetadata", function () {
       try { a.playbackRate = prayerAudioRate(); } catch (e) { /* ignore */ }
-      // The recording knows how long the prayer really takes. In the hands-free
-      // flow, let it finish instead of cutting it off at the text-length
-      // estimate — only ever extend, so a failed load changes nothing.
-      if (auto.on && isFinite(a.duration) && a.duration > 0) {
-        var secs = a.duration / prayerAudioRate() + 1.2;
-        if (secs * 1000 > auto.duration) {
-          auto.duration = secs * 1000;
-          if (auto.elapsed > auto.duration - 100) auto.elapsed = Math.max(0, auto.duration - 100);
-        }
-      }
+      fitStepToRecording(a);
     });
     a.addEventListener("error", function () { failRecordedVoice(); });
     a.addEventListener("ended", function () {
@@ -845,6 +851,9 @@
           if (req === prayerAudioReq) failRecordedVoice();
         });
       }
+      // The same prayer may already be loaded (voice switched on by hand before
+      // the flow started), so no metadata event is coming to fit the clock.
+      fitStepToRecording(a);
     } catch (e) {
       prayerAudioOnFail = null;
       return false;
@@ -1025,6 +1034,9 @@
     var kept = auto.duration > 0 ? Math.min(1, auto.elapsed / auto.duration) : 0;
     auto.duration = stepSeconds() * 1000;
     auto.elapsed = Math.round(auto.duration * kept);
+    // A pace change must never shorten the clock below the recording that is
+    // actually playing, or the words would be cut off at the new estimate.
+    fitStepToRecording(prayerAudio);
   }
 
   function runAutoTimer() {

@@ -1190,9 +1190,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .send-btn { width: 44px; height: 44px; }
 }
 
-@media (max-width: 380px) {
-  /* Four chips no longer fit one line: two even rows instead of a squeezed
-     or spilling row. */
+@media (max-width: 404px) {
+  /* Four chips need 401px to sit on one line. Below that they would clip their
+     words, so they take two even rows instead. */
   .rosary-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
   .rosary-controls .bgm-chip { flex-direction: row; gap: 5px; min-width: 0; }
   .bgm-chip .bgm-state { font-size: 11px; }
