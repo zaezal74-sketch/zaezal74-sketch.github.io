@@ -337,11 +337,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 /* The home hero is a photograph, not a heading block: a small stone chapel at
    dawn — candles, a lit window, light in the haze — bled to the frame's edges
-   under a scrim that deepens to night violet at the foot, so the date, the
-   greeting and the question sit on the picture the way a title sits on a
-   printed plate. The greeting keeps the 21px / 600 the user tuned; only its
-   ink changes here, to warm white with a soft lift so it stays crisp over the
-   window's glow. */
+   under a scrim that deepens to night violet where the date and the greeting
+   sit, then breathes out into the page instead of ending on a hard edge. The
+   greeting keeps the 21px / 600 the user tuned; only its ink changes here, to
+   warm white with a soft lift so it stays crisp over the window's glow. */
 #view-home .hero {
   position: relative;
   isolation: isolate;
@@ -349,19 +348,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 336px;
+  min-height: 344px;
   margin: calc(-1 * var(--main-pad)) calc(-1 * var(--main-pad)) 0;
   padding: 26px calc(var(--main-pad) + 2px) 74px;
-  background: #241a33 url("assets/hero-dawn.webp") center 42% / cover no-repeat;
-  border-radius: 0;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, .16) inset,
-    0 26px 44px -34px rgba(48, 30, 80, .8);
   color: var(--hero-ink);
 }
-/* Two washes: a warm bloom where the window burns brightest, and a vertical
-   scrim that holds the top edge dark enough for the header's hairline and the
-   bottom dark enough for three lines of text. */
+/* Two washes over the picture: a warm bloom where the window burns brightest
+   and a violet gradient that holds the lower third dark enough for three
+   lines — then a mask lets the last 12% dissolve into the page, so the plate
+   never cuts a black band across the lavender. */
 #view-home .hero::before {
   content: "";
   position: absolute;
@@ -371,26 +366,13 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
     radial-gradient(78% 58% at 80% 10%, rgba(255, 206, 142, .26), transparent 68%),
     radial-gradient(90% 70% at 6% 88%, rgba(96, 62, 158, .22), transparent 70%),
     linear-gradient(180deg,
-      rgba(22, 14, 36, .42) 0%,
-      rgba(22, 14, 36, .06) 26%,
-      rgba(20, 12, 32, .52) 62%,
-      rgba(17, 10, 28, .93) 100%);
-}
-/* A gold hairline and a four-point ornament sit at the foot of the plate, the
-   way a printed missal closes a picture with a rule. */
-#view-home .hero::after {
-  content: "";
-  position: absolute;
-  left: calc(var(--main-pad) + 2px);
-  right: calc(var(--main-pad) + 2px);
-  bottom: 26px;
-  height: 1px;
-  background: linear-gradient(90deg,
-    rgba(242, 214, 166, 0) 0%,
-    rgba(242, 214, 166, .55) 22%,
-    rgba(255, 255, 255, .18) 50%,
-    rgba(242, 214, 166, .55) 78%,
-    rgba(242, 214, 166, 0) 100%);
+      rgba(22, 14, 36, .40) 0%,
+      rgba(22, 14, 36, .05) 28%,
+      rgba(20, 12, 32, .56) 64%,
+      rgba(17, 10, 28, .94) 100%),
+    #241a33 url("assets/hero-dawn.webp") center 42% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, #000 0 88%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0 88%, transparent 100%);
 }
 #view-home .hero > * { position: relative; z-index: 1; }
 #view-home .hero .date-line {
@@ -408,16 +390,16 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 
 /* ------------------------------------------------------------------- chips */
-/* The mood chips ride up over the foot of the hero plate: pearl tiles on the
-   scrim's deep violet, they read as a floating control panel on the picture
-   rather than six boxes parked under it. */
+/* The mood chips follow the photograph's dissolve, pearl tiles on the page
+   itself — six small stones laid under the picture rather than a control bar
+   parked on it. */
 .chip-grid {
   position: relative;
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin: -56px 1px 16px;
+  margin: 6px 1px 16px;
 }
 .mood-chip {
   display: flex; flex-direction: column; align-items: center; gap: 5px;
@@ -1410,10 +1392,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
       rgba(10, 6, 16, .62) 0%,
       rgba(10, 6, 16, .48) 34%,
       rgba(9, 5, 14, .78) 66%,
-      rgba(9, 5, 14, .97) 100%);
+      rgba(9, 5, 14, .97) 100%),
+    #120c1c url("assets/hero-dawn.webp") center 42% / cover no-repeat;
 }
 .phone-frame.focus-mode #view-home .hero {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .05) inset, 0 26px 44px -34px rgba(0, 0, 0, .95);
+  box-shadow: none;
 }
 .phone-frame.focus-mode .tabbar { opacity: .78; }
 .phone-frame.focus-mode .seg-row,
