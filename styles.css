@@ -544,8 +544,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   white-space: pre-line;
   word-break: keep-all;
   overflow-wrap: break-word;
-  font-size: 16.5px;
-  line-height: 1.85;
+  font-size: 15px;
+  line-height: 1.8;
   /* One step up from the plain 400 the serif body used to sit at — enough ink
      to hold its line on a phone, short of the 600 the scripture body uses. */
   font-weight: 500;
@@ -556,13 +556,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   transition: font-size .3s ease;
 }
 
-/* The Creed, the Our Father and the Hail Mary are the prayers long enough to
-   push the bead button off a phone screen, so those three step down one size;
-   the short acclamations (성호경·영광송·구원의 기도) keep 16.5px. */
-.prayer-text.is-compact {
-  font-size: 15px;
-  line-height: 1.8;
-}
+/* Every prayer step reads at the same size — the short acclamations and the
+   long prayers alike — so the card never jumps when the rosary moves on. */
 
 .progress-track { height: 3px; border-radius: 999px; background: var(--line-soft); margin: 14px 0 14px; overflow: hidden; }
 .progress-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--violet), var(--gold)); transition: width .2s linear; }
@@ -639,15 +634,24 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 @keyframes tapFlash { from { opacity: 1; } to { opacity: 0; } }
 
-.rosary-controls { display: flex; gap: 7px; margin-top: 12px; }
+.rosary-controls { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 12px; }
+/* Four chips share the row whatever the state: they give up padding and a
+   little type size rather than taking a second row that pushes the card
+   below the fold. */
+.rosary-controls .chip-btn {
+  min-width: 0;
+  padding: 0 6px;
+  gap: 4px;
+  font-size: 11.5px;
+}
 /* The cathedral sound: an icon with its state written under it, narrow enough
    that the three main chips keep their width. */
 .rosary-controls .bgm-chip {
   flex: 0 0 auto;
   flex-direction: column;
   gap: 0;
-  min-width: 52px;
-  padding: 0 6px;
+  min-width: 44px;
+  padding: 0 4px;
   line-height: 1;
 }
 .bgm-chip .bgm-icon { font-size: 13px; line-height: 1.2; }
@@ -1056,8 +1060,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   border-color: #2f2542;
   box-shadow: 0 0 60px -20px rgba(180, 150, 220, .35);
 }
-.phone-frame.focus-mode .prayer-text { font-size: 20px; line-height: 1.95; }
-.phone-frame.focus-mode .prayer-text.is-compact { font-size: 18px; line-height: 1.9; }
+.phone-frame.focus-mode .prayer-text { font-size: 18px; line-height: 1.9; }
 .phone-frame.focus-mode .decade-dots span.is-current { box-shadow: 0 0 0 5px rgba(224, 184, 114, .18); }
 .phone-frame.focus-mode .app-main { padding-bottom: 12px; }
 
@@ -1180,7 +1183,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .app-main { padding: 14px 14px 22px; }
   .app-main.is-coach { padding-bottom: 0; }
   .hero h2 { font-size: 19.5px; }
-  .prayer-text { font-size: 15.5px; }
   .chip-btn { font-size: 11px; }
   .vseg { font-size: 11px; min-height: 30px; padding: 0 5px; }
   .voice-label { min-width: 30px; font-size: 11px; }
@@ -1191,11 +1193,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 
 @media (max-width: 404px) {
-  /* Four chips need 401px to sit on one line. Below that they would clip their
-     words, so they take two even rows instead. */
-  .rosary-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-  .rosary-controls .bgm-chip { flex-direction: row; gap: 5px; min-width: 0; }
-  .bgm-chip .bgm-state { font-size: 11px; }
+  /* One row still: the four chips tighten their type and padding instead of
+     wrapping into two even rows that the card would clip. */
+  .rosary-controls { gap: 4px; }
+  .rosary-controls .chip-btn { padding: 0 4px; gap: 3px; font-size: 11px; }
+  .rosary-controls .bgm-chip { min-width: 40px; padding: 0 3px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -478,12 +478,8 @@
       : (curDecade < 0 ? t("rosary.opening") : t("rosary.decade", { n: curDecade + 1 }));
     el.rosaryStepInfo.textContent = info;
 
-    // The long prayers (Creed, Our Father, Hail Mary) run past the bead button
-    // at the normal size, so they share one smaller step.
-    el.prayerText.classList.toggle(
-      "is-compact",
-      !!step && (step.kind === "creed" || step.kind === "ourFather" || step.kind === "hailMary")
-    );
+    // Every step reads at one size, so the text no longer swaps a size class.
+    el.prayerText.classList.remove("is-compact");
 
     if (!step) {
       el.prayerLabel.textContent = t("rosary.complete");

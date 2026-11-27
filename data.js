@@ -290,7 +290,7 @@
     glory: {
       title: { ko: "영광송", en: "Glory Be" },
       text: {
-        ko: "영광이 성부와 성자와 성령께 처음과 같이 이제와 항상 영원히. 아멘.",
+        ko: "영광이 성부와 성자와 성령께\n처음과 같이 이제와 항상 영원히. 아멘.",
         en: "Glory be to the Father, and to the Son, and to the Holy Spirit: as it was in the beginning, is now, and ever shall be, world without end. Amen."
       },
       seconds: 10
