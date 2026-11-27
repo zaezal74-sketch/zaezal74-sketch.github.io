@@ -159,11 +159,12 @@
     return "greet.night";
   }
 
-  /* The home plate follows the clock: the morning sun on the chapel wall, the
-     bright nave through the middle of the day, the blue-lit altar in the
-     evening. The boundaries are the greeting's own split of the day (5 / 12 /
-     18), so the photograph and the words never disagree. styles.css maps each
-     slot to its plate keyed on <body data-hero>. */
+  /* The home plate follows the clock: the garden shrine in the morning, the
+     sunbeam chapel through the middle of the day, the blue-lit altar in the
+     evening. The boundaries are the greeting's own (5 / 12 / 18); the late
+     night keeps the evening plate, since the blue-lit altar is the one that
+     belongs to the dark. styles.css maps each slot to its plate keyed on
+     <body data-hero>. */
   function heroSlot(hour) {
     if (hour >= 5 && hour < 12) return "morning";
     if (hour >= 12 && hour < 18) return "day";
