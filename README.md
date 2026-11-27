@@ -178,7 +178,7 @@ curl -s -X POST https://soulsync-sandy.vercel.app/api/pi/approve \
 projects/soulsync/
 ├── index.html          # 4개 화면 + 1분 기도 시트 + 하단 탭
 ├── privacy.html        # 공개 개인정보처리방침 (한국어·영어, 자체 완결 페이지)
-├── assets/             # 앱 아이콘·로고 (icon-1024 · icon-192 · favicon · logo) + 홈 히어로 사진(hero-dawn.webp, 1150×920)
+├── assets/             # 앱 아이콘·로고 (icon-1024 · icon-192 · favicon · logo) + 홈 히어로 사진 3장(hero-morning · hero-day · hero-evening.webp, 시간대별 자동 전환)
 ├── styles.css          # 모바일 430px 프레임, 데스크톱 폰 프레임, 집중 모드(다크)
 ├── app.js              # 렌더링·이벤트·localStorage·묵주 세션·음성/차임
 ├── audio/ko-male/      # 녹음된 한국어 남성 기도 음성 54개(mp3): 기도 6 · 신비 묵상 20 · 1분 기도 28

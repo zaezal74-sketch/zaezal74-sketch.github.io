@@ -31,11 +31,12 @@ def main():
 
     def style_tag(match):
         css = read(match.group(1))
-        # The home hero's photograph is the one local image the CSS points at;
-        # a shared single file has no assets folder beside it, so it travels
-        # inside the stylesheet as a data URI.
-        css = css.replace('url("assets/hero-dawn.webp")',
-                          'url("%s")' % data_uri("assets/hero-dawn.webp", "image/webp"))
+        # The home hero's photographs are the local images the CSS points at,
+        # one per time of day; a shared single file has no assets folder beside
+        # it, so they travel inside the stylesheet as data URIs.
+        for name in ("hero-morning.webp", "hero-day.webp", "hero-evening.webp"):
+            css = css.replace('url("assets/%s")' % name,
+                              'url("%s")' % data_uri("assets/" + name, "image/webp"))
         return "<style>\n%s\n</style>" % css.rstrip()
 
     html = re.sub(r'<link rel="stylesheet" href="([^"]+\.css)" />', style_tag, html)

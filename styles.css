@@ -89,11 +89,16 @@
   --satin-gold: linear-gradient(172deg, #f7e2b6 0%, #e6c483 38%, #d3a85f 68%, #b98c3c 100%);
   --satin-gold-line: rgba(255, 255, 255, .6);
 
-  /* Ink used on top of the home hero photograph. */
-  --hero-ink: #fffdf9;
-  --hero-ink-soft: rgba(250, 244, 255, .92);
-  --hero-gold: #f2d6a6;
-  --hero-photo: url("assets/hero-dawn.webp");
+  /* Ink used on top of the home hero photograph. The plate is now a bright
+     morning window rather than a dark chapel, so the ink is the app's deep
+     violet instead of warm white; the halo behind it is white, which is what
+     keeps the date and the greeting crisp on the pale glass. Focus mode swaps
+     all four back to light ink on a dark night scrim. */
+  --hero-ink: #241c3a;
+  --hero-ink-soft: #4a3a72;
+  --hero-gold: #8a5f22;
+  --hero-halo: rgba(255, 255, 255, .72);
+  --hero-photo: url("assets/hero-morning.webp");
 
   --font-ui: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard",
     "Noto Sans KR", "Malgun Gothic", system-ui, "Segoe UI", Roboto, sans-serif;
@@ -339,12 +344,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
    fuller ink, 600, and 15px rather than a faint 14px whisper. */
 .hero-sub { font-size: 15px; font-weight: 600; color: var(--hero-sub-ink); letter-spacing: -.002em; line-height: 1.45; margin-top: 8px; }
 
-/* The home hero is a photograph, not a heading block: a small stone chapel at
-   dawn — candles, a lit window, light in the haze — bled to the frame's edges
-   under a scrim that deepens to night violet where the date and the greeting
-   sit, then breathes out into the page instead of ending on a hard edge. The
+/* The home hero is a photograph, not a heading block: one of the user's own
+   chapel photographs — the morning sun on a marble wall, the bright nave at
+   midday, the blue-lit altar in the evening — bled to the frame's edges and
+   swapped by the hour. It is a slim band, not a wall: the greeting block is
+   what the eye should land on first, so the plate is about half its old height
+   and the mood chips and today's card sit in the first screen under it. The
    greeting keeps the 21px / 600 the user tuned; only its ink changes here, to
-   warm white with a soft lift so it stays crisp over the window's glow. */
+   the app's deep violet, so the date, the greeting and the question stay crisp
+   on the pale glass. */
 #view-home .hero {
   position: relative;
   isolation: isolate;
@@ -352,45 +360,63 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 318px;
+  min-height: 170px;
   margin: calc(-1 * var(--main-pad)) calc(-1 * var(--main-pad)) 0;
-  padding: 26px calc(var(--main-pad) + 2px) 48px;
+  padding: 16px calc(var(--main-pad) + 2px) 24px;
   color: var(--hero-ink);
 }
-/* Two washes over the picture: a warm bloom where the window burns brightest
-   and a violet gradient that holds the lower third dark enough for three
-   lines — then a mask lets the last 12% dissolve into the page, so the plate
-   never cuts a black band across the lavender. */
+/* Three washes over the picture: a warm bloom where the sun crosses the glass,
+   a faint violet breath at the lower left, and a milky ivory veil that thickens
+   toward the bottom — the frosted glass the three lines of ink sit on. The mask
+   then lets the last 10% dissolve into the lavender page, so the plate never
+   ends on a hard band. */
 #view-home .hero::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(78% 58% at 80% 10%, rgba(255, 206, 142, .26), transparent 68%),
-    radial-gradient(90% 70% at 6% 88%, rgba(96, 62, 158, .22), transparent 70%),
+    /* the sun's bloom where it crosses the glass, right of centre */
+    radial-gradient(58% 86% at 84% 6%, rgba(255, 222, 168, .28), transparent 70%),
+    /* The frosted ivory glass the three lines of ink sit on: an ellipse pinned
+       to the bottom-left corner, where the date, the greeting and the question
+       are, thinning out toward the right so the picture keeps its subject. */
+    radial-gradient(120% 152% at -6% 120%,
+      rgba(255, 253, 250, .95) 0%,
+      rgba(255, 252, 247, .80) 28%,
+      rgba(255, 250, 246, .46) 54%,
+      rgba(255, 250, 246, .14) 76%,
+      rgba(255, 250, 246, 0) 88%),
+    /* and a short veil into the lavender page, so the plate never ends on a
+       hard band */
     linear-gradient(180deg,
-      rgba(22, 14, 36, .40) 0%,
-      rgba(22, 14, 36, .05) 28%,
-      rgba(20, 12, 32, .56) 64%,
-      rgba(17, 10, 28, .94) 100%),
-    #241a33 var(--hero-photo) center 42% / cover no-repeat;
+      rgba(255, 253, 249, .04) 0%,
+      rgba(255, 252, 247, .10) 46%,
+      rgba(253, 248, 255, .30) 78%,
+      rgba(249, 243, 255, .62) 94%,
+      rgba(246, 239, 255, .80) 100%),
+    #f8f2e9 var(--hero-photo) 50% 46% / cover no-repeat;
   -webkit-mask-image: linear-gradient(180deg, #000 0 90%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0 90%, transparent 100%);
 }
+/* The plate follows the clock: the app stamps <body data-hero> from the hour
+   (see heroSlot() in app.js), and morning is the default so the first paint is
+   already right before the script runs. */
+body[data-hero="day"] { --hero-photo: url("assets/hero-day.webp"); }
+body[data-hero="evening"] { --hero-photo: url("assets/hero-evening.webp"); }
 #view-home .hero > * { position: relative; z-index: 1; }
 #view-home .hero .date-line {
   color: var(--hero-gold);
   letter-spacing: .14em;
-  text-shadow: 0 1px 8px rgba(12, 6, 22, .55);
+  text-shadow: 0 1px 8px var(--hero-halo);
 }
 #view-home .hero h2 {
   color: var(--hero-ink);
-  text-shadow: 0 2px 14px rgba(10, 5, 20, .55), 0 1px 2px rgba(10, 5, 20, .45);
+  text-shadow: 0 1px 0 var(--hero-halo), 0 0 18px var(--hero-halo);
 }
 #view-home .hero .hero-sub {
   color: var(--hero-ink-soft);
-  text-shadow: 0 1px 10px rgba(10, 5, 20, .55);
+  text-shadow: 0 1px 10px var(--hero-halo);
 }
 
 /* ------------------------------------------------------------------- chips */
@@ -1386,6 +1412,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   --satin-violet-line: rgba(255, 255, 255, .22);
   --hero-ink: #fbf7ff;
   --hero-ink-soft: rgba(240, 232, 250, .9);
+  /* Night ink needs a dark halo instead of the daylight white one. */
+  --hero-halo: rgba(8, 4, 14, .62);
   --message-face: radial-gradient(120% 90% at 100% 0%, rgba(150, 112, 214, .20), transparent 62%),
     var(--card-face);
   --verse-face: var(--card-face);
@@ -1433,17 +1461,19 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
     radial-gradient(80% 40% at 88% 4%, rgba(224, 184, 114, .08) 0%, rgba(224, 184, 114, 0) 70%);
 }
 /* The night mode is for praying, not for looking at a photograph: the home
-   plate dims to a low ember so the candles read as light rather than as a
-   picture competing with the prayer. */
+   plate sinks to a low ember so the window reads as light rather than as a
+   picture competing with the prayer. The morning plate is bright, so the scrim
+   has to carry almost all of the dimming here — a thin one left pale glass
+   under white ink and the greeting disappeared. */
 .phone-frame.focus-mode #view-home .hero::before {
   background:
-    radial-gradient(78% 58% at 80% 10%, rgba(255, 206, 142, .14), transparent 68%),
+    radial-gradient(64% 82% at 86% 8%, rgba(255, 208, 150, .14), transparent 70%),
     linear-gradient(180deg,
-      rgba(10, 6, 16, .62) 0%,
-      rgba(10, 6, 16, .48) 34%,
-      rgba(9, 5, 14, .78) 66%,
+      rgba(12, 8, 20, .86) 0%,
+      rgba(11, 7, 18, .82) 38%,
+      rgba(10, 6, 16, .90) 70%,
       rgba(9, 5, 14, .97) 100%),
-    #120c1c var(--hero-photo) center 42% / cover no-repeat;
+    #120c1c var(--hero-photo) 50% 46% / cover no-repeat;
 }
 .phone-frame.focus-mode #view-home .hero {
   box-shadow: none;
@@ -1583,6 +1613,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .app-main { --main-pad: 14px; padding: var(--main-pad) var(--main-pad) 22px; }
   .app-main.is-coach { padding-bottom: 0; }
   .hero h2 { font-size: 19.5px; }
+  #view-home .hero { min-height: 160px; padding-bottom: 20px; }
   .chip-btn { font-size: 11px; }
   .vseg { font-size: 11px; min-height: 30px; padding: 0 5px; }
   .voice-label { min-width: 30px; font-size: 11px; }
