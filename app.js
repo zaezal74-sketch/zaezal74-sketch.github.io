@@ -640,7 +640,14 @@
     dir: { male: "audio/ko-male/", female: "audio/ko-female/" },
     pace: { slow: 0.95, normal: 1.08, fast: 1.25 }
   };
-  var prayerAudio = null; // the <audio> sounding right now
+  // One <audio> for every recorded prayer: made on first use, then kept for the
+  // life of the page. A phone hands playback to the element a tap started;
+  // building a fresh Audio() inside the auto-advance timer asks for that
+  // permission again, out of any gesture, and is refused — which is why the
+  // rosary fell silent the moment it moved on from 성호경.
+  var prayerAudio = null;
+  var prayerAudioOnFail = null; // device-voice fallback for the request in flight
+  var prayerAudioReq = 0;       // one id per request, so a stale event is ignored
 
   function recordedVoiceOn() {
     return lang === "ko";
@@ -671,10 +678,53 @@
     return (set && set.length ? "minute-" + key : "minute-default") + "-" + idx;
   }
 
-  // Rapid next/prev, mute and reset must never leave two prayers talking.
+  // The one element, wired once. Its listeners outlive every prayer, so they
+  // read the module state rather than closing over one step's variables — and
+  // nothing piles up on the element as the rosary moves along.
+  function ensurePrayerAudio() {
+    if (prayerAudio) return prayerAudio;
+    var a;
+    try { a = new Audio(); } catch (e) { return null; }
+    if (!a || typeof a.play !== "function") return null;
+    a.preload = "auto";
+    a.addEventListener("loadedmetadata", function () {
+      try { a.playbackRate = prayerAudioRate(); } catch (e) { /* ignore */ }
+      // The recording knows how long the prayer really takes. In the hands-free
+      // flow, let it finish instead of cutting it off at the text-length
+      // estimate — only ever extend, so a failed load changes nothing.
+      if (auto.on && isFinite(a.duration) && a.duration > 0) {
+        var secs = a.duration / prayerAudioRate() + 1.2;
+        if (secs * 1000 > auto.duration) {
+          auto.duration = secs * 1000;
+          if (auto.elapsed > auto.duration - 100) auto.elapsed = Math.max(0, auto.duration - 100);
+        }
+      }
+    });
+    a.addEventListener("error", function () { failRecordedVoice(); });
+    a.addEventListener("ended", function () {
+      // The words were read; there is nothing left to fall back to. The next
+      // step plays through this same element.
+      prayerAudioOnFail = null;
+    });
+    prayerAudio = a;
+    return a;
+  }
+
+  // One fallback at most per request: the error event and the rejected play()
+  // promise both land here, and the id bump makes the second one a no-op.
+  function failRecordedVoice() {
+    var cb = prayerAudioOnFail;
+    prayerAudioOnFail = null;
+    prayerAudioReq += 1;
+    if (cb) cb();
+  }
+
+  // Rapid next/prev, mute and reset must never leave two prayers talking. The
+  // element itself stays: it is the one the phone has already unlocked.
   function stopRecordedVoice() {
+    prayerAudioReq += 1;
+    prayerAudioOnFail = null;
     var a = prayerAudio;
-    prayerAudio = null;
     if (!a) return;
     try { a.pause(); } catch (e) { /* ignore */ }
     try { a.currentTime = 0; } catch (e) { /* ignore */ }
@@ -684,44 +734,25 @@
   // browser refuses to play it, `onFail` reads the same words in the device
   // voice so the reader is never left in silence.
   function playRecordedVoice(name, onFail) {
-    stopRecordedVoice();
-    var a;
-    try { a = new Audio(prayerAudioDir() + name + ".mp3"); } catch (e) { return false; }
-    if (!a || typeof a.play !== "function") return false;
+    var a = ensurePrayerAudio();
+    if (!a) return false;
     // A browser with no MP3 decoder (and a headless one) should read with the
     // device voice rather than fail silently.
     if (typeof a.canPlayType === "function" && a.canPlayType("audio/mpeg") === "") return false;
-    prayerAudio = a;
-    function failed() {
-      if (prayerAudio !== a) return; // replaced or stopped meanwhile
-      prayerAudio = null;
-      if (onFail) onFail();
-    }
+    stopRecordedVoice(); // pauses the last prayer and opens a new request
+    var req = prayerAudioReq;
+    prayerAudioOnFail = onFail || null;
     try {
-      a.preload = "auto";
+      a.src = prayerAudioDir() + name + ".mp3";
       a.playbackRate = prayerAudioRate();
-      a.addEventListener("loadedmetadata", function () {
-        if (prayerAudio !== a) return;
-        try { a.playbackRate = prayerAudioRate(); } catch (e) { /* ignore */ }
-        // The recording knows how long the prayer really takes. In the hands-free
-        // flow, let it finish instead of cutting it off at the text-length
-        // estimate — only ever extend, so a failed load changes nothing.
-        if (auto.on && isFinite(a.duration) && a.duration > 0) {
-          var secs = a.duration / prayerAudioRate() + 1.2;
-          if (secs * 1000 > auto.duration) {
-            auto.duration = secs * 1000;
-            if (auto.elapsed > auto.duration - 100) auto.elapsed = Math.max(0, auto.duration - 100);
-          }
-        }
-      });
-      a.addEventListener("error", failed);
-      a.addEventListener("ended", function () {
-        if (prayerAudio === a) prayerAudio = null;
-      });
       var started = a.play();
-      if (started && typeof started.catch === "function") started.catch(failed);
+      if (started && typeof started.catch === "function") {
+        started.catch(function () {
+          if (req === prayerAudioReq) failRecordedVoice();
+        });
+      }
     } catch (e) {
-      prayerAudio = null;
+      prayerAudioOnFail = null;
       return false;
     }
     return true;
