@@ -96,7 +96,7 @@
      all four back to light ink on a dark night scrim. */
   --hero-ink: #241c3a;
   --hero-ink-soft: #4a3a72;
-  --hero-gold: #8a5f22;
+  --hero-gold: #7c551a;
   --hero-halo: rgba(255, 255, 255, .72);
   --hero-photo: url("assets/hero-morning.webp");
 
@@ -381,11 +381,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
     /* The frosted ivory glass the three lines of ink sit on: an ellipse pinned
        to the bottom-left corner, where the date, the greeting and the question
        are, thinning out toward the right so the picture keeps its subject. */
-    radial-gradient(120% 152% at -6% 120%,
-      rgba(255, 253, 250, .95) 0%,
-      rgba(255, 252, 247, .80) 28%,
-      rgba(255, 250, 246, .46) 54%,
-      rgba(255, 250, 246, .14) 76%,
+    radial-gradient(134% 176% at -6% 118%,
+      rgba(255, 253, 250, .96) 0%,
+      rgba(255, 252, 247, .87) 26%,
+      rgba(255, 250, 246, .62) 50%,
+      rgba(255, 250, 246, .28) 72%,
       rgba(255, 250, 246, 0) 88%),
     /* and a short veil into the lavender page, so the plate never ends on a
        hard band */
