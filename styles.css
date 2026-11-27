@@ -999,16 +999,16 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 /* The first visit to the coach used to be a bare grey line floating in an empty
    column. The invitation now sits in the same pearl material the replies use,
-   under a small gold cross, so the screen reads as prepared rather than blank. */
+   under a small gold cross drawn as a background — decorative, so a screen
+   reader has nothing to announce. */
 .thread-empty::before {
-  content: "✝";
+  content: "";
   display: block;
-  margin-bottom: 10px;
-  font-family: var(--font-ui);
-  font-size: 16px;
-  line-height: 1;
-  color: var(--gold);
-  opacity: .8;
+  width: 16px;
+  height: 16px;
+  margin: 0 auto 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M9 1h2v7h6v2h-6v9H9v-9H3V8h6z' fill='%23875c1d'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  opacity: .85;
 }
 
 .bubble-user {
