@@ -646,12 +646,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   flex: 0 0 auto;
   flex-direction: column;
   gap: 0;
-  min-width: 50px;
-  padding: 0 7px;
+  min-width: 52px;
+  padding: 0 6px;
   line-height: 1;
 }
-.bgm-chip .bgm-icon { font-size: 13px; line-height: 1.15; }
-.bgm-chip .bgm-state { font-size: 9.5px; font-weight: 800; letter-spacing: .02em; line-height: 1.15; opacity: .78; }
+.bgm-chip .bgm-icon { font-size: 13px; line-height: 1.2; }
+.bgm-chip .bgm-state { font-size: 10px; font-weight: 800; letter-spacing: .01em; line-height: 1.2; opacity: .8; }
 
 /* Voice options: folded away until voice guidance is on, then unfolded softly
    so the prayer card stays calm at rest. */
