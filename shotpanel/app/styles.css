@@ -51,15 +51,15 @@
   --card-face: linear-gradient(166deg, #fffdfa 0%, #fdfaff 46%, #f7f0fd 100%);
   --card-face-soft: linear-gradient(166deg, #fdf8ff 0%, #faf4fe 55%, #f4ecfd 100%);
   --card-edge: rgba(255, 255, 255, .92);
-  --card-ring: rgba(118, 86, 176, .10);
+  --card-ring: rgba(112, 80, 170, .14);
   --card-shadow:
     0 1px 0 rgba(255, 255, 255, .9) inset,
     0 1px 2px rgba(60, 44, 96, .06),
     0 2px 6px -3px rgba(70, 50, 120, .16),
     0 22px 36px -26px rgba(70, 50, 120, .55);
   --card-sheen: repeating-linear-gradient(116deg,
-    rgba(255, 255, 255, .6) 0 1px,
-    rgba(255, 255, 255, 0) 1px 4px);
+    rgba(255, 255, 255, .34) 0 1px,
+    rgba(255, 255, 255, 0) 1px 6px);
 
   /* The few cards that carry their own tint do it through these, so the night
      face can swap every surface in one place instead of chasing selectors. */
@@ -286,6 +286,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .app-main::-webkit-scrollbar { display: none; }
 
 .view { display: none; max-width: 100%; min-width: 0; }
+/* A soft light from above the column: without it the screens that carry no
+   photograph (rosary, coach, routine) read as a flat lavender sheet, and a
+   card's shadow has nothing to fall on. */
+.app-main {
+  background:
+    radial-gradient(120% 46% at 50% -6%, rgba(255, 255, 255, .62) 0%, rgba(255, 255, 255, 0) 62%),
+    radial-gradient(80% 40% at 88% 4%, rgba(224, 198, 160, .18) 0%, rgba(224, 198, 160, 0) 70%);
+}
 .view.is-active { display: block; animation: rise .28s cubic-bezier(.2, .7, .3, 1) both; }
 
 /* The coach owns its own scroll area: the thread scrolls and the composer sits
@@ -341,11 +349,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 322px;
+  min-height: 336px;
   margin: calc(-1 * var(--main-pad)) calc(-1 * var(--main-pad)) 0;
-  padding: 26px calc(var(--main-pad) + 2px) 64px;
+  padding: 26px calc(var(--main-pad) + 2px) 74px;
   background: #241a33 url("assets/hero-dawn.webp") center 42% / cover no-repeat;
-  border-radius: 0 0 30px 30px;
+  border-radius: 0;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, .16) inset,
     0 26px 44px -34px rgba(48, 30, 80, .8);
@@ -409,7 +417,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin: -46px 1px 16px;
+  margin: -56px 1px 16px;
 }
 .mood-chip {
   display: flex; flex-direction: column; align-items: center; gap: 5px;
@@ -467,7 +475,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   border-radius: inherit;
   pointer-events: none;
 }
-.card::before { background-image: var(--card-sheen); opacity: .33; }
+.card::before { background-image: var(--card-sheen); opacity: .22; }
 .card::after { box-shadow: inset 0 0 0 1px var(--card-ring); }
 .card > * { position: relative; z-index: 1; }
 .card-eyebrow {
