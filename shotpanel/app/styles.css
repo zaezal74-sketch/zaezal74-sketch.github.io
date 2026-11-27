@@ -93,6 +93,7 @@
   --hero-ink: #fffdf9;
   --hero-ink-soft: rgba(250, 244, 255, .92);
   --hero-gold: #f2d6a6;
+  --hero-photo: url("assets/hero-dawn.webp");
 
   --font-ui: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard",
     "Noto Sans KR", "Malgun Gothic", system-ui, "Segoe UI", Roboto, sans-serif;
@@ -373,7 +374,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
       rgba(22, 14, 36, .05) 28%,
       rgba(20, 12, 32, .56) 64%,
       rgba(17, 10, 28, .94) 100%),
-    #241a33 url("assets/hero-dawn.webp") center 42% / cover no-repeat;
+    #241a33 var(--hero-photo) center 42% / cover no-repeat;
   -webkit-mask-image: linear-gradient(180deg, #000 0 90%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0 90%, transparent 100%);
 }
@@ -532,17 +533,19 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .todo-item:last-child { border-bottom: 0; }
 .todo-item .check {
   flex: 0 0 auto;
-  width: 23px; height: 23px; border-radius: 8px;
-  border: 1.6px solid var(--line);
-  background: var(--surface);
+  width: 23px; height: 23px; border-radius: 9px;
+  border: 1.4px solid color-mix(in srgb, var(--violet) 26%, transparent);
+  background: var(--card-face);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 1px 2px rgba(60, 44, 96, .07);
   display: grid; place-items: center;
   font-size: 12px; color: transparent;
   transition: all .2s ease;
 }
 .todo-item.is-done .check {
-  background: linear-gradient(150deg, var(--violet), var(--violet-strong));
+  background: var(--satin-violet);
   border-color: transparent;
   color: #fff;
+  box-shadow: 0 1px 0 var(--satin-violet-line) inset, 0 6px 12px -9px rgba(58, 38, 104, .9);
 }
 .todo-item.is-done .label { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
 .todo-item .label { flex: 1; }
@@ -1414,7 +1417,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
       rgba(10, 6, 16, .48) 34%,
       rgba(9, 5, 14, .78) 66%,
       rgba(9, 5, 14, .97) 100%),
-    #120c1c url("assets/hero-dawn.webp") center 42% / cover no-repeat;
+    #120c1c var(--hero-photo) center 42% / cover no-repeat;
 }
 .phone-frame.focus-mode #view-home .hero {
   box-shadow: none;
