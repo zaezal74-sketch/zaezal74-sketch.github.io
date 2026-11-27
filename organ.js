@@ -39,7 +39,7 @@
     { ratio: 3, gain: 0.022, wave: "triangle", detune: -2 }
   ];
 
-  var VOLUME = 0.07;       // master level (brief: 0.06–0.09)
+  var VOLUME = 0.115;      // master level: one step up from 0.07, still under the voice
   var STEP = 17;           // a new chord every 17 s
   var ATTACK = 5.5;        // each chord swells in slowly
   var ATTACK_FIRST = 2.5;  // the first one sooner, so a tap is heard at once

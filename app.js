@@ -979,7 +979,16 @@
   var rosaryLive = false;    // a prayer is under way on the rosary screen
   var ambientManual = false; // ⛪ was pressed, so listen even before a bead
 
+  // The 1-minute prayer gets the same church air under its own voice: it runs
+  // while the sheet counts down with the voice on, and lets go the moment the
+  // prayer ends, the sheet closes, the voice is muted or the phone goes away.
+  function minuteAmbientLive() {
+    return minute.open && minute.running && !minute.finished &&
+      !!state.settings.voice && !!state.settings.ambient && !document.hidden;
+  }
+
   function ambientShouldPlay() {
+    if (minuteAmbientLive()) return true;
     return !!state.settings.ambient && activeTab === "rosary" &&
       !document.hidden && (rosaryLive || ambientManual);
   }
@@ -1137,6 +1146,7 @@
       stopSpeech();
     }
     renderRosary();
+    syncAmbient(); // muting the voice also silences the 1-minute prayer's pad
   }
 
   function toggleFocus() {
@@ -1215,6 +1225,7 @@
     el.minuteDoneBtn.hidden = true;
     el.breathRing.classList.remove("is-breathing");
     renderMinute();
+    syncAmbient(); // opening the sheet alone is silent; a leftover pad lets go
   }
 
   function closeMinute() {
@@ -1223,6 +1234,7 @@
     minute.running = false;
     el.minuteSheet.hidden = true;
     stopSpeech();
+    syncAmbient();
   }
 
   function startMinute() {
@@ -1231,6 +1243,7 @@
     minute.elapsed = 0;
     buzz(10);
     chime("soft");
+    syncAmbient(); // the tap is the gesture: the pad swells in under the voice
     speakMinute();
     clearInterval(minute.timer);
     minute.timer = setInterval(function () {
@@ -1270,6 +1283,7 @@
     el.minuteStartBtn.hidden = true;
     el.minuteDoneBtn.hidden = true;
     el.breathRing.classList.remove("is-breathing");
+    syncAmbient();
     if (completed) {
       recordRoutine("prayer", { silent: true });
       chime("finish");
@@ -1868,6 +1882,12 @@
         setting: !!state.settings.ambient,
         manual: ambientManual,
         live: rosaryLive,
+        minute: {
+          open: minute.open,
+          running: minute.running,
+          finished: minute.finished,
+          live: minuteAmbientLive()
+        },
         organ: window.SS_ORGAN ? window.SS_ORGAN.status() : null
       };
     },
