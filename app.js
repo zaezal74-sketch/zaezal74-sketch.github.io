@@ -53,7 +53,7 @@
       routine: {},
       coach: [],
       pi: { connected: false, username: null, offerings: [], mine: 0 },
-      settings: { voice: false, voiceGender: "male", voicePace: "slow", focus: false },
+      settings: { voice: false, voiceGender: "male", voicePace: "slow", focus: false, ambient: true },
       rosary: { mystery: "joyful" },
       best: 0
     };
@@ -107,7 +107,9 @@
 
   /* ----------------------------------------------------------- rosary state */
   var rosary = window.SS_ROSARY.create(state.rosary.mystery);
-  var auto = { on: false, timer: null, elapsed: 0, duration: 0 };
+  // paused keeps its place: the step, the elapsed time and the voice stay put
+  // until ▶ carries on from there.
+  var auto = { on: false, timer: null, elapsed: 0, duration: 0, paused: false };
 
   /* ----------------------------------------------------------- minute state */
   var minute = { open: false, running: false, elapsed: 0, timer: null, finished: false };
@@ -121,8 +123,9 @@
       "todoList", "todoProgress", "todoHint", "startPrayerBtn", "startRosaryBtn",
       "mysteryTabs", "rosaryRecNote", "mysteryStrip", "decadeDots", "rosaryStepInfo",
       "beads", "prayerLabel", "beadCounter", "prayerText", "stepProgress", "beadBtn",
+      "seekBar", "seekThumb", "prevStepBtn", "nextStepBtn",
       "beadBtnLabel", "autoBtn", "voiceBtn", "voicePanel", "voiceGender", "voicePace",
-      "resetBtn", "focusBtn", "rosaryDone",
+      "bgmBtn", "bgmState", "resetBtn", "focusBtn", "rosaryDone",
       "doneAgainBtn", "doneRoutineBtn", "coachThread", "coachChips", "coachInput",
       "coachSend", "streakValue", "bestValue", "weekGrid", "routineTodayList",
       "routineFeedback", "piModeBadge", "piUserLine", "piConnectBtn", "piLogoutBtn",
@@ -334,6 +337,74 @@
     return { title: L(p.title), text: L(p.text), seconds: p.seconds, meditation: false };
   }
 
+  /* The progress line doubles as the seek control: it shows how far the current
+     prayer has come, and a finger can pull the prayer itself forward or back. */
+  function setProgress(frac) {
+    var pct = Math.max(0, Math.min(1, frac || 0));
+    el.stepProgress.style.width = (pct * 100).toFixed(2) + "%";
+    if (el.seekThumb) {
+      el.seekThumb.style.left = (pct * 100).toFixed(2) + "%";
+      el.seekThumb.style.opacity = pct > 0.004 ? "1" : "0";
+    }
+    if (el.seekBar) el.seekBar.setAttribute("aria-valuenow", String(Math.round(pct * 100)));
+  }
+
+  function stepFraction() {
+    if (auto.duration > 0) return Math.min(1, auto.elapsed / auto.duration);
+    return rosary.total ? rosary.index / rosary.total : 0;
+  }
+
+  // A finger on the bar owns the clock meanwhile, so the auto timer does not
+  // fight the hand.
+  var seeking = false;
+  function seekFromEvent(e) {
+    var rect = el.seekBar.getBoundingClientRect();
+    if (!rect.width) return;
+    var point = (e.touches && e.touches.length) ? e.touches[0] : e;
+    seekTo((point.clientX - rect.left) / rect.width);
+  }
+  function endSeek() {
+    seeking = false;
+    el.seekBar.classList.remove("is-touching");
+  }
+
+  // Move the prayer to a point on the bar: the clock, the bar and — when the
+  // prayer's own recording is loaded — the voice all land on the same place.
+  function seekTo(frac) {
+    if (!rosary.step) return;
+    var f = Math.max(0, Math.min(1, frac));
+    if (!(auto.duration > 0)) auto.duration = stepSeconds() * 1000;
+    auto.elapsed = Math.round(auto.duration * f);
+    var a = prayerAudio;
+    var name = rosaryAudioName();
+    if (a && name && a.src && a.duration && a.src.indexOf(name + ".mp3") !== -1) {
+      try {
+        a.currentTime = Math.max(0, Math.min(a.duration - 0.05, a.duration * f));
+      } catch (e) { /* ignore */ }
+    }
+    // A hand-placed position is worth keeping: ▶ carries on from here.
+    if (!auto.on) auto.paused = true;
+    setProgress(f);
+  }
+
+  // Step back or on by one prayer — for a bead that slipped past, or to begin
+  // a particular prayer again.
+  function jumpStep(delta) {
+    var target = rosary.index + delta;
+    if (target < 0 || target > rosary.total) return;
+    stopSpeech();
+    rosary.setIndex(target);
+    auto.elapsed = 0;
+    auto.paused = false;
+    if (auto.on) beginStepTimer();
+    rosaryLive = !rosary.finished;
+    renderRosary();
+    if (auto.on) setProgress(0);
+    syncAmbient();
+    if (state.settings.voice) speakCurrent();
+    buzz(6);
+  }
+
   function renderRosary() {
     // mystery selector
     if (el.mysteryTabs.childElementCount !== 4) {
@@ -433,8 +504,17 @@
       el.rosaryDone.hidden = true;
     }
 
-    if (!auto.on) {
-      el.stepProgress.style.width = (rosary.index / rosary.total * 100).toFixed(2) + "%";
+    // A paused session keeps the bar exactly where it stopped; it only snaps to
+    // a step boundary on a real step change, a reset or a fresh visit.
+    if (!auto.on && !auto.paused) {
+      setProgress(rosary.index / rosary.total);
+    }
+    if (el.prevStepBtn) {
+      el.prevStepBtn.disabled = rosary.index <= 0;
+      el.nextStepBtn.disabled = rosary.index >= rosary.total;
+      el.prevStepBtn.setAttribute("aria-label", t("rosary.prevStep"));
+      el.nextStepBtn.setAttribute("aria-label", t("rosary.nextStep"));
+      el.seekBar.setAttribute("aria-label", t("rosary.seek"));
     }
     el.autoBtn.setAttribute("aria-pressed", auto.on ? "true" : "false");
     el.autoBtn.innerHTML = auto.on
@@ -459,6 +539,14 @@
     }
     markSeg(el.voiceGender, "data-gender", state.settings.voiceGender);
     markSeg(el.voicePace, "data-pace", state.settings.voicePace);
+
+    // Cathedral background sound: on by default, one tap to silence it, with
+    // its state written plainly so a glance is enough.
+    var bgmOn = !!state.settings.ambient;
+    el.bgmBtn.setAttribute("aria-pressed", bgmOn ? "true" : "false");
+    el.bgmBtn.setAttribute("title", t("rosary.bgmLabel"));
+    el.bgmBtn.setAttribute("aria-label", t("rosary.bgmLabel") + " · " + t(bgmOn ? "rosary.bgmOn" : "rosary.bgmOff"));
+    el.bgmState.textContent = t(bgmOn ? "rosary.bgmOn" : "rosary.bgmOff");
 
     el.focusBtn.setAttribute("aria-pressed", state.settings.focus ? "true" : "false");
     el.phoneFrame.classList.toggle("focus-mode", !!state.settings.focus);
@@ -498,7 +586,9 @@
       } catch (e) { /* older browsers */ }
     }
 
+    rosaryLive = !rosary.finished;
     renderRosary();
+    syncAmbient();
     if (auto.on && !rosary.finished) {
       beginStepTimer();
       speakCurrent();
@@ -785,7 +875,51 @@
     try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
   }
 
+  // Pause without losing the place. The recording keeps its currentTime and the
+  // device voice keeps its utterance, so ▶ reads on from the same word instead
+  // of starting the prayer over.
+  function pauseSpeech() {
+    var a = prayerAudio;
+    if (a) { try { if (!a.paused) a.pause(); } catch (e) { /* ignore */ } }
+    try {
+      var synth = window.speechSynthesis;
+      if (synth && synth.speaking && !synth.paused) synth.pause();
+    } catch (e) { /* ignore */ }
+  }
+
+  function resumeSpeech() {
+    var a = prayerAudio;
+    if (a && a.src && a.paused && !a.ended && a.currentTime > 0.05) {
+      // A recording that already ran to its end must not start again.
+      if (a.duration && a.currentTime >= a.duration - 0.15) return false;
+      try {
+        var p = a.play();
+        if (p && typeof p.catch === "function") p.catch(function () { /* refused */ });
+        return true;
+      } catch (e) { /* fall through */ }
+    }
+    try {
+      var synth = window.speechSynthesis;
+      if (synth && synth.paused) { synth.resume(); return true; }
+    } catch (e) { /* ignore */ }
+    return false;
+  }
+
   var audioCtx = null;
+  // One shared context for everything the app plays: the decade bell and the
+  // cathedral pad below both route through it, so a phone only ever has to
+  // unlock one.
+  function ensureAudioCtx() {
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      if (!audioCtx) audioCtx = new Ctx();
+      if (audioCtx.state === "suspended" && audioCtx.resume) audioCtx.resume();
+      return audioCtx;
+    } catch (e) {
+      return null;
+    }
+  }
   // A warm, low bell instead of a bright ping: a low fundamental, quiet
   // inharmonic partials, a soft attack and a long fade — closer to a singing
   // bowl or a distant church bell than to a notification tone.
@@ -804,17 +938,15 @@
 
   function chime(kind) {
     try {
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-      if (!audioCtx) audioCtx = new Ctx();
-      if (audioCtx.state === "suspended") audioCtx.resume();
+      var ctx = ensureAudioCtx();
+      if (!ctx) return;
       var spec = BELL[kind] || BELL.soft;
-      var now = audioCtx.currentTime;
+      var now = ctx.currentTime;
       spec.notes.forEach(function (freq, i) {
         var start = now + i * spec.gap;
         BELL_PARTIALS.forEach(function (p) {
-          var o = audioCtx.createOscillator();
-          var g = audioCtx.createGain();
+          var o = ctx.createOscillator();
+          var g = ctx.createGain();
           var fade = spec.decay * (1 - p.level * 0.35);
           o.type = "sine";
           o.frequency.value = freq * p.ratio;
@@ -822,7 +954,7 @@
           g.gain.linearRampToValueAtTime(spec.gain * p.level, start + 0.03);
           g.gain.exponentialRampToValueAtTime(0.0001, start + fade);
           o.connect(g);
-          g.connect(audioCtx.destination);
+          g.connect(ctx.destination);
           o.start(start);
           o.stop(start + fade + 0.2);
         });
@@ -830,8 +962,48 @@
     } catch (e) { /* audio is a bonus, never a failure */ }
   }
 
+  /* ------------------------------------------------------- cathedral organ */
+  // A very quiet pipe-organ pad under the rosary, so the prayer has the air of a
+  // church behind it without covering the words. It follows the prayer: it
+  // swells in when the flow starts or a bead is offered, and lets go when the
+  // flow is paused, started over or left behind.
+  var rosaryLive = false;    // a prayer is under way on the rosary screen
+  var ambientManual = false; // ⛪ was pressed, so listen even before a bead
+
+  function ambientShouldPlay() {
+    return !!state.settings.ambient && activeTab === "rosary" &&
+      !document.hidden && (rosaryLive || ambientManual);
+  }
+
+  function syncAmbient() {
+    if (!window.SS_ORGAN) return;
+    if (ambientShouldPlay()) {
+      var ctx = ensureAudioCtx();
+      if (!ctx) return;
+      window.SS_ORGAN.play(ctx);
+    } else {
+      window.SS_ORGAN.stop();
+    }
+  }
+
+  function toggleAmbient() {
+    state.settings.ambient = !state.settings.ambient;
+    save();
+    buzz(8);
+    if (state.settings.ambient) {
+      ambientManual = true;
+      ensureAudioCtx(); // the tap itself is the gesture a phone needs
+      toast("⛪ " + t("rosary.bgmToastOn"));
+    } else {
+      ambientManual = false;
+      toast(t("rosary.bgmToastOff"));
+    }
+    syncAmbient();
+    renderRosary();
+  }
+
   /* -------------------------------------------------------------- auto flow */
-  function beginStepTimer() {
+  function stepSeconds() {
     var data = currentPrayerData();
     var factor = paceFactor();
     var seconds = data ? data.seconds : DECADE_SECONDS;
@@ -839,40 +1011,88 @@
       var spoken = Math.round(data.text.length / 9 * factor);
       seconds = Math.max(seconds, Math.min(34, spoken));
     }
-    seconds = Math.max(3, Math.round(seconds * factor * 10) / 10);
-    auto.elapsed = 0;
-    auto.duration = seconds * 1000;
+    return Math.max(3, Math.round(seconds * factor * 10) / 10);
   }
 
-  function startAuto() {
-    if (rosary.finished) rosary.reset();
-    auto.on = true;
-    beginStepTimer();
+  function beginStepTimer() {
+    auto.elapsed = 0;
+    auto.duration = stepSeconds() * 1000;
+  }
+
+  // A pace change mid-step keeps the place already reached, so a settings tap
+  // never throws the reader back to the start of a prayer.
+  function retimeStep() {
+    var kept = auto.duration > 0 ? Math.min(1, auto.elapsed / auto.duration) : 0;
+    auto.duration = stepSeconds() * 1000;
+    auto.elapsed = Math.round(auto.duration * kept);
+  }
+
+  function runAutoTimer() {
     clearInterval(auto.timer);
     auto.timer = setInterval(function () {
+      if (!auto.on) return;
+      if (seeking) return; // a finger on the bar has the clock meanwhile
       auto.elapsed += 100;
       var pct = Math.min(1, auto.elapsed / auto.duration);
-      if (!auto.on) return;
-      el.stepProgress.style.width = (pct * 100).toFixed(2) + "%";
+      setProgress(pct);
       if (pct >= 1) {
         auto.elapsed = 0;
         if (rosary.finished) { stopAuto(); return; }
         advanceRosary();
       }
     }, 100);
-    renderRosary();
-    speakCurrent();
   }
 
-  function stopAuto() {
+  // Play from a standing start, or carry on from a pause exactly where the
+  // prayer, its progress and its voice had stopped.
+  function startAuto() {
+    if (rosary.finished) { rosary.reset(); auto.paused = false; }
+    var resuming = auto.paused && auto.duration > 0;
+    auto.paused = false;
+    auto.on = true;
+    if (!resuming) beginStepTimer();
+    runAutoTimer();
+    rosaryLive = true;
+    renderRosary();
+    syncAmbient();
+    if (!resuming) { speakCurrent(); return; }
+    // Carry the voice on from the word it stopped at. If there is no recording
+    // waiting at a position (voice was off, or the bar was only dragged), read
+    // this prayer from where the bar now stands instead.
+    var a = prayerAudio;
+    var hasPosition = !!(a && a.src && a.currentTime > 0.05 && !a.ended);
+    if (!resumeSpeech() && !hasPosition) speakCurrent();
+  }
+
+  // 일시정지 — the step, the bar and the voice stay where they are; only the
+  // sound stops, and ▶ brings it back to the same place.
+  function pauseAuto() {
+    if (!auto.on) return;
     auto.on = false;
+    auto.paused = !rosary.finished;
     clearInterval(auto.timer);
     auto.timer = null;
+    pauseSpeech();
+    rosaryLive = false;
+    ambientManual = false;
+    syncAmbient();
+    renderRosary();
+  }
+
+  // A real end (finished, new mystery, 처음부터): nothing is left to resume.
+  function stopAuto() {
+    auto.on = false;
+    auto.paused = false;
+    clearInterval(auto.timer);
+    auto.timer = null;
+    rosaryLive = false;
+    ambientManual = false;
+    syncAmbient();
     renderRosary();
   }
 
   function toggleAuto() {
-    if (auto.on) stopAuto();
+    if (auto.on) pauseAuto();
     else startAuto();
   }
 
@@ -880,6 +1100,7 @@
     if (!D.mysteries[key] || key === rosary.mystery) return;
     stopAuto();
     stopSpeech();
+    auto.elapsed = 0;
     state.rosary.mystery = key;
     save();
     rosary = window.SS_ROSARY.create(key);
@@ -889,6 +1110,7 @@
   function resetRosary() {
     stopAuto();
     stopSpeech();
+    auto.elapsed = 0;
     rosary.reset();
     renderRosary();
   }
@@ -927,7 +1149,7 @@
     state.settings.voicePace = pace;
     save();
     buzz(8);
-    if (auto.on) beginStepTimer(); // the running session follows the new pace
+    if (auto.on) retimeStep(); // the running session follows the new pace
     renderRosary();
     if (state.settings.voice) speakCurrent();
   }
@@ -1360,8 +1582,15 @@
   function switchTab(name) {
     if (!name) return;
     if (activeTab === "rosary" && name !== "rosary") {
-      stopAuto();
-      stopSpeech();
+      // Leaving the prayer keeps the place: the sound stops, and ▶ picks the
+      // session up again at the same bead and the same word.
+      if (auto.on) pauseAuto();
+      else {
+        pauseSpeech();
+        rosaryLive = false;
+        ambientManual = false;
+        syncAmbient();
+      }
     }
     activeTab = name;
     var views = document.querySelectorAll(".view");
@@ -1466,6 +1695,32 @@
 
     el.autoBtn.addEventListener("click", toggleAuto);
     el.voiceBtn.addEventListener("click", toggleVoice);
+    el.bgmBtn.addEventListener("click", toggleAmbient);
+    el.prevStepBtn.addEventListener("click", function () { jumpStep(-1); });
+    el.nextStepBtn.addEventListener("click", function () { jumpStep(1); });
+
+    // Dragging or tapping the progress line moves the prayer itself: the bar,
+    // the clock and (when it is loaded) the voice go to the same place.
+    el.seekBar.addEventListener("pointerdown", function (e) {
+      seeking = true;
+      el.seekBar.classList.add("is-touching");
+      try { el.seekBar.setPointerCapture(e.pointerId); } catch (err) { /* older */ }
+      seekFromEvent(e);
+      buzz(4);
+      e.preventDefault();
+    });
+    el.seekBar.addEventListener("pointermove", function (e) {
+      if (seeking) seekFromEvent(e);
+    });
+    el.seekBar.addEventListener("pointerup", endSeek);
+    el.seekBar.addEventListener("pointercancel", endSeek);
+    el.seekBar.addEventListener("keydown", function (e) {
+      var f = stepFraction();
+      if (e.key === "ArrowLeft") { seekTo(f - 0.05); e.preventDefault(); }
+      else if (e.key === "ArrowRight") { seekTo(f + 0.05); e.preventDefault(); }
+      else if (e.key === "Home") { seekTo(0); e.preventDefault(); }
+      else if (e.key === "End") { seekTo(1); e.preventDefault(); }
+    });
     el.voiceGender.addEventListener("click", function (e) {
       var b = e.target.closest("[data-gender]");
       if (b) setVoiceGender(b.getAttribute("data-gender"));
@@ -1526,6 +1781,16 @@
     });
     el.resetDataBtn.addEventListener("click", resetData);
 
+    document.addEventListener("visibilitychange", function () {
+      // A phone that sleeps or an app that goes away must not keep the organ
+      // humming unseen; it comes back with the screen.
+      if (document.hidden) {
+        if (window.SS_ORGAN) window.SS_ORGAN.stop();
+      } else {
+        syncAmbient();
+      }
+    });
+
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && minute.open) closeMinute();
     });
@@ -1573,6 +1838,9 @@
     advanceRosary: advanceRosary,
     startAuto: startAuto,
     stopAuto: stopAuto,
+    pauseAuto: pauseAuto,
+    jumpStep: jumpStep,
+    seekTo: seekTo,
     minuteSteps: minuteSteps,
     openMinute: openMinute,
     renderAll: renderAll,
@@ -1580,6 +1848,20 @@
     setVoiceGender: setVoiceGender,
     setVoicePace: setVoicePace,
     autoDuration: function () { return auto.duration; },
+    autoState: function () {
+      return { on: auto.on, paused: auto.paused, elapsed: auto.elapsed, duration: auto.duration };
+    },
+    ambient: function () {
+      return {
+        setting: !!state.settings.ambient,
+        manual: ambientManual,
+        live: rosaryLive,
+        organ: window.SS_ORGAN ? window.SS_ORGAN.status() : null
+      };
+    },
+    // The live audio objects, so a browser check can read the voice's real
+    // playhead and the organ's context state.
+    debugAudio: function () { return { ctx: audioCtx, voicing: prayerAudio }; },
     rosary: function () { return rosary; }
   };
 })();

@@ -116,17 +116,33 @@
         </div>
         <p class="prayer-text" id="prayerText">성부와 성자와 성령의 이름으로. 아멘.</p>
 
-        <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="stepProgress"></div></div>
+        <div class="seek-bar" id="seekBar" role="slider" tabindex="0" aria-orientation="horizontal"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="기도 진행 위치">
+          <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="stepProgress"></div></div>
+          <span class="seek-thumb" id="seekThumb" aria-hidden="true"></span>
+        </div>
 
-        <button class="bead-btn" id="beadBtn" type="button">
-          <span class="bead-btn-ring" aria-hidden="true"></span>
-          <span id="beadBtnLabel">한 알 바치기</span>
-        </button>
+        <div class="bead-action-row">
+          <button class="step-jump" id="prevStepBtn" type="button" aria-label="이전 기도">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button class="bead-btn" id="beadBtn" type="button">
+            <span class="bead-btn-ring" aria-hidden="true"></span>
+            <span id="beadBtnLabel">한 알 바치기</span>
+          </button>
+          <button class="step-jump" id="nextStepBtn" type="button" aria-label="다음 기도">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
 
         <div class="rosary-controls">
           <button class="chip-btn" id="autoBtn" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> <span data-i18n="rosary.autoStart">자동 진행</span></button>
           <button class="chip-btn" id="voiceBtn" type="button" aria-pressed="false"><span aria-hidden="true">🔊</span> <span data-i18n="rosary.voiceOff">음성 안내</span></button>
           <button class="chip-btn" id="resetBtn" type="button"><span aria-hidden="true">↺</span> <span data-i18n="rosary.reset">처음부터</span></button>
+          <button class="chip-btn bgm-chip" id="bgmBtn" type="button" aria-pressed="true">
+            <span class="bgm-icon" aria-hidden="true">⛪</span>
+            <span class="bgm-state" id="bgmState">켜짐</span>
+          </button>
         </div>
 
         <!-- Voice options stay folded away until voice guidance is on. -->
@@ -320,6 +336,7 @@
 <script src="https://sdk.minepi.com/pi-sdk.js" async></script>
 <script src="data.js"></script>
 <script src="rosary.js"></script>
+<script src="organ.js"></script>
 <script src="coach.js"></script>
 <script src="pi-adapter.js"></script>
 <script src="app.js"></script>

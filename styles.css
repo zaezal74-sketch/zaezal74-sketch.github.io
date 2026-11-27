@@ -567,6 +567,52 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .progress-track { height: 3px; border-radius: 999px; background: var(--line-soft); margin: 14px 0 14px; overflow: hidden; }
 .progress-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--violet), var(--gold)); transition: width .2s linear; }
 
+/* The progress line is also the seek control: a 28px finger-friendly strip
+   around a slim track, so the prayer can be pulled forward or back. */
+.seek-bar {
+  position: relative;
+  padding: 12px 0;
+  margin: -2px 0 2px;
+  cursor: pointer;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.seek-bar .progress-track { margin: 0; height: 4px; }
+.seek-bar:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; border-radius: 8px; }
+.seek-thumb {
+  position: absolute;
+  top: 50%; left: 0;
+  width: 13px; height: 13px;
+  margin: -6.5px 0 0 -6.5px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--violet);
+  box-shadow: 0 1px 4px rgba(60, 44, 96, .28);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease, transform .12s ease;
+}
+.seek-bar.is-touching .seek-thumb { transform: scale(1.18); }
+
+/* The bead button with one step back and one step on beside it. */
+.bead-action-row { display: flex; align-items: stretch; gap: 8px; }
+.bead-action-row .bead-btn { flex: 1 1 auto; width: auto; min-width: 0; }
+.step-jump {
+  flex: 0 0 auto;
+  width: 46px;
+  min-height: 58px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--violet-strong);
+  font-size: 24px; font-weight: 700; line-height: 1;
+  transition: transform .12s ease, background .18s ease, opacity .18s ease;
+}
+.step-jump span { display: block; transform: translateY(-1px); }
+.step-jump:active { transform: scale(.95); background: var(--violet-soft); }
+.step-jump[disabled] { opacity: .32; }
+
 .bead-btn {
   position: relative;
   width: 100%; min-height: 58px;
@@ -594,6 +640,18 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @keyframes tapFlash { from { opacity: 1; } to { opacity: 0; } }
 
 .rosary-controls { display: flex; gap: 7px; margin-top: 12px; }
+/* The cathedral sound: an icon with its state written under it, narrow enough
+   that the three main chips keep their width. */
+.rosary-controls .bgm-chip {
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 0;
+  min-width: 50px;
+  padding: 0 7px;
+  line-height: 1;
+}
+.bgm-chip .bgm-icon { font-size: 13px; line-height: 1.15; }
+.bgm-chip .bgm-state { font-size: 9.5px; font-weight: 800; letter-spacing: .02em; line-height: 1.15; opacity: .78; }
 
 /* Voice options: folded away until voice guidance is on, then unfolded softly
    so the prayer card stays calm at rest. */
@@ -1130,6 +1188,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .sheet { padding-left: 16px; padding-right: 16px; }
   .composer textarea { padding: 11px 12px; }
   .send-btn { width: 44px; height: 44px; }
+}
+
+@media (max-width: 380px) {
+  /* Four chips no longer fit one line: two even rows instead of a squeezed
+     or spilling row. */
+  .rosary-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .rosary-controls .bgm-chip { flex-direction: row; gap: 5px; min-width: 0; }
+  .bgm-chip .bgm-state { font-size: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
