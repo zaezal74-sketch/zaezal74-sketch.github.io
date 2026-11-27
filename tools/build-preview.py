@@ -8,6 +8,7 @@ are.
 
     python3 tools/build-preview.py
 """
+import base64
 import os
 import re
 
@@ -20,11 +21,21 @@ def read(name):
         return fh.read()
 
 
+def data_uri(name, mime):
+    with open(os.path.join(ROOT, name), "rb") as fh:
+        return "data:%s;base64,%s" % (mime, base64.b64encode(fh.read()).decode("ascii"))
+
+
 def main():
     html = read("index.html")
 
     def style_tag(match):
         css = read(match.group(1))
+        # The home hero's photograph is the one local image the CSS points at;
+        # a shared single file has no assets folder beside it, so it travels
+        # inside the stylesheet as a data URI.
+        css = css.replace('url("assets/hero-dawn.webp")',
+                          'url("%s")' % data_uri("assets/hero-dawn.webp", "image/webp"))
         return "<style>\n%s\n</style>" % css.rstrip()
 
     html = re.sub(r'<link rel="stylesheet" href="([^"]+\.css)" />', style_tag, html)
