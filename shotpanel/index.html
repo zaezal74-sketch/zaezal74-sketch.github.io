@@ -4,12 +4,6 @@
 </head><body><iframe id="frame"></iframe>
 <script>
   var v = new URLSearchParams(location.search).get("t") || Date.now();
-  var f = document.getElementById("frame");
-  f.src = "https://soulsync-sandy.vercel.app/?v=" + encodeURIComponent(v);
-  f.addEventListener("load", function () {
-    try {
-      // no cross-origin access; a plain reload already busts the HTML cache
-    } catch (e) {}
-  });
+  document.getElementById("frame").src = "./app/index.html?v=" + encodeURIComponent(v);
 </script>
 </body></html>
