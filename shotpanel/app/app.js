@@ -226,7 +226,7 @@
     if (key === "rosary") return "10 " + (lang === "ko" ? "알" : "beads");
     if (key === "word") return lang === "ko" ? "말씀" : "verse";
     if (key === "meditation") return "10 " + (lang === "ko" ? "분" : "min");
-    if (key === "journal") return lang === "ko" ? "한 줄" : "one line";
+    if (key === "journal") return lang === "ko" ? "한 줄" : "1 line";
     return "1 min";
   }
   function todoKeys() { return TODO_KEYS[mode] || TODO_KEYS.mind; }
