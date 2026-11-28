@@ -18,9 +18,7 @@
        `catholic` opens the prayer life the app was first built around. */
     "mode.label": { ko: "모드 선택", en: "Choose a mode" },
     "mode.mind": { ko: "모두를 위한 마음 돌봄", en: "Mind Care" },
-    "mode.mindShort": { ko: "마음 돌봄", en: "Mind Care" },
     "mode.catholic": { ko: "천주교 신자 · 묵상·묵주기도", en: "Catholic · Rosary" },
-    "mode.catholicShort": { ko: "천주교 · 묵주기도", en: "Catholic · Rosary" },
     "mode.switchedMind": { ko: "마음 돌봄 모드로 열었어요", en: "Mind Care mode" },
     "mode.switchedCatholic": { ko: "천주교 · 묵상·묵주기도 모드로 열었어요", en: "Catholic · Rosary mode" },
 
@@ -40,13 +38,9 @@
     "home.todo.breath": { ko: "1분 호흡 1회", en: "One minute of breathing" },
     "home.todo.meditation": { ko: "마음 명상 10분", en: "Ten minutes of meditation" },
     "home.todo.journal": { ko: "감사·감정 기록 1회", en: "One gratitude note" },
-    "home.todo.breathMeta": { ko: "호흡", en: "breath" },
-    "home.todo.meditationMeta": { ko: "명상", en: "meditation" },
-    "home.todo.journalMeta": { ko: "기록", en: "note" },
 
     /* --- mind mode: the one-minute breathing sheet ----------------------- */
     "minute.titleMind": { ko: "1분 호흡 명상", en: "One-minute breathing" },
-    "minute.startMind": { ko: "1분 시작하기", en: "Begin one minute" },
     "minute.doneTitleMind": { ko: "1분을 마쳤어요", en: "One minute, complete" },
     "minute.doneBodyMind": {
       ko: "짧아도 괜찮아요. 고른 숨 한 번이 오늘의 중심이 됩니다.",
@@ -89,7 +83,6 @@
     "med.doneNote": { ko: "3분도 10분도 같은 마음이에요. 앉았다는 것만으로 충분해요.", en: "Three minutes or ten — the same heart. Sitting down was enough." },
     "med.again": { ko: "한 번 더", en: "Go again" },
     "med.routine": { ko: "루틴 보기", en: "See my routine" },
-    "med.tapStart": { ko: "아래 시작하기를 누르면 호흡 안내가 함께 흘러요", en: "Press Begin and the breathing guide will lead" },
 
     "greet.morning": { ko: "좋은 아침이에요", en: "Good morning" },
     "greet.afternoon": { ko: "오후도 잘 보내고 계신가요?", en: "How is your afternoon going?" },
@@ -283,7 +276,6 @@
     "pi.demoSuccessMind": { ko: "데모 모드로 응원을 기록했어요 (실제 결제 없음)", en: "Recorded in demo mode (no real payment)" },
     "pi.solidTitleMind": { ko: "글로벌 마음 돌봄", en: "Global Mind Care" },
     "pi.solidDescMind": { ko: "오늘 함께 마음을 돌본 파이오니어", en: "Pioneers caring for their minds today" },
-    "pi.solidAddMind": { ko: "오늘의 마음으로 한 사람이 더 함께했어요", en: "Your session added one more today" },
 
     "minute.title": { ko: "1분 기도", en: "One-minute prayer" },
     "minute.start": { ko: "1분 시작하기", en: "Begin one minute" },
