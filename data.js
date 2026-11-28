@@ -10,12 +10,86 @@
   /* ---------------------------------------------------------------- UI copy */
   var UI = {
     "brand.tagline": { ko: "신앙과 마음, 삶의 리듬", en: "Faith, heart, and the rhythm of life" },
+    "brand.tagline.mind": { ko: "마음과 호흡, 하루의 리듬", en: "Mind, breath, and the rhythm of the day" },
+
+    /* The two ways into the app. `mind` is the default: a wide, non-religious
+       mind-care mode anyone — a first-time visitor, a hackathon judge, a
+       Pioneer who is not Catholic — can open without explaining themselves.
+       `catholic` opens the prayer life the app was first built around. */
+    "mode.label": { ko: "모드 선택", en: "Choose a mode" },
+    "mode.mind": { ko: "모두를 위한 마음 돌봄", en: "Mind Care" },
+    "mode.mindShort": { ko: "마음 돌봄", en: "Mind Care" },
+    "mode.catholic": { ko: "천주교 신자 · 묵상·묵주기도", en: "Catholic · Rosary" },
+    "mode.catholicShort": { ko: "천주교 · 묵주기도", en: "Catholic · Rosary" },
+    "mode.switchedMind": { ko: "마음 돌봄 모드로 열었어요", en: "Mind Care mode" },
+    "mode.switchedCatholic": { ko: "천주교 · 묵상·묵주기도 모드로 열었어요", en: "Catholic · Rosary mode" },
 
     "nav.home": { ko: "홈", en: "Home" },
     "nav.rosary": { ko: "묵주기도", en: "Rosary" },
+    "nav.meditation": { ko: "마음 명상", en: "Meditation" },
     "nav.coach": { ko: "AI 코치", en: "AI Coach" },
     "nav.routine": { ko: "루틴·Pi", en: "Routine & Pi" },
     "nav.label": { ko: "주요 화면", en: "Main screens" },
+
+    /* --- mind mode: home ------------------------------------------------- */
+    "home.verseLabelMind": { ko: "오늘의 한 줄", en: "A line for today" },
+    "home.verseTagMind": { ko: "마음챙김", en: "Mindful" },
+    "home.minuteCtaMind": { ko: "1분 호흡 명상", en: "1-minute breathing" },
+    "home.prayerCtaMind": { ko: "호흡 명상 시작하기", en: "Begin a breathing pause" },
+    "home.rosaryCtaMind": { ko: "마음 명상으로 이어가기", en: "Continue with meditation" },
+    "home.todo.breath": { ko: "1분 호흡 1회", en: "One minute of breathing" },
+    "home.todo.meditation": { ko: "마음 명상 10분", en: "Ten minutes of meditation" },
+    "home.todo.journal": { ko: "감사·감정 기록 1회", en: "One gratitude note" },
+    "home.todo.breathMeta": { ko: "호흡", en: "breath" },
+    "home.todo.meditationMeta": { ko: "명상", en: "meditation" },
+    "home.todo.journalMeta": { ko: "기록", en: "note" },
+
+    /* --- mind mode: the one-minute breathing sheet ----------------------- */
+    "minute.titleMind": { ko: "1분 호흡 명상", en: "One-minute breathing" },
+    "minute.startMind": { ko: "1분 시작하기", en: "Begin one minute" },
+    "minute.doneTitleMind": { ko: "1분을 마쳤어요", en: "One minute, complete" },
+    "minute.doneBodyMind": {
+      ko: "짧아도 괜찮아요. 고른 숨 한 번이 오늘의 중심이 됩니다.",
+      en: "Short is fine. One chosen breath becomes the center of the day."
+    },
+
+    /* --- mind mode: the meditation screen -------------------------------- */
+    "med.title": { ko: "마음 명상", en: "Meditation" },
+    "med.sub": { ko: "호흡에 머물고, 마음으로 돌아오는 시간", en: "Rest in your breath, return to your heart" },
+    "med.topicLabel": { ko: "무엇에 머물까요", en: "What shall we rest on" },
+    "med.topic.breath": { ko: "호흡", en: "Breath" },
+    "med.topic.mindful": { ko: "마음챙김", en: "Mindfulness" },
+    "med.topic.body": { ko: "바디스캔", en: "Body scan" },
+    "med.topic.gratitude": { ko: "감사 묵상", en: "Gratitude" },
+    "med.guide.breath": { ko: "숨이 들어오고 나가는 것을 알아차려요", en: "Notice the breath coming in and going out" },
+    "med.guide.mindful": { ko: "떠오르는 생각을 밀어내지 말고 바라봐요", en: "Watch thoughts arrive without pushing them away" },
+    "med.guide.body": { ko: "머리부터 발끝까지 천천히 살펴봐요", en: "Move slowly from head to toe" },
+    "med.guide.gratitude": { ko: "지금 감사한 것 하나를 마음에 담아요", en: "Hold one thing you are grateful for" },
+    "med.durationLabel": { ko: "시간", en: "Length" },
+    "med.min3": { ko: "3분", en: "3 min" },
+    "med.min5": { ko: "5분", en: "5 min" },
+    "med.min10": { ko: "10분", en: "10 min" },
+    "med.start": { ko: "시작하기", en: "Begin" },
+    "med.pause": { ko: "일시정지", en: "Pause" },
+    "med.resume": { ko: "이어서", en: "Resume" },
+    "med.reset": { ko: "처음부터", en: "Start over" },
+    "med.ready": { ko: "준비되면 시작해 보세요", en: "Begin whenever you are ready" },
+    "med.hint": { ko: "눈을 감고 어깨의 힘을 빼 보세요", en: "Close your eyes and let your shoulders drop" },
+    "med.cycle": { ko: "4초 들이쉬고 · 2초 멈추고 · 6초 내쉬어요", en: "In for 4 · hold for 2 · out for 6" },
+    "med.inhale": { ko: "들이쉬세요", en: "Breathe in" },
+    "med.hold": { ko: "잠시 멈추세요", en: "Hold" },
+    "med.exhale": { ko: "내쉬세요", en: "Breathe out" },
+    "med.barIn": { ko: "들이쉬기", en: "In" },
+    "med.barHold": { ko: "멈추기", en: "Hold" },
+    "med.barOut": { ko: "내쉬기", en: "Out" },
+    "med.breathCount": { ko: "{n}번째 호흡", en: "Breath {n}" },
+    "med.remaining": { ko: "{time} 남음", en: "{time} left" },
+    "med.doneTitle": { ko: "명상을 마쳤어요", en: "Meditation complete" },
+    "med.doneBody": { ko: "지금의 호흡과 마음을 그대로 안고 가요. 오늘의 명상이 기록됐어요.", en: "Carry this breath and this heart with you. Today's session is recorded." },
+    "med.doneNote": { ko: "3분도 10분도 같은 마음이에요. 앉았다는 것만으로 충분해요.", en: "Three minutes or ten — the same heart. Sitting down was enough." },
+    "med.again": { ko: "한 번 더", en: "Go again" },
+    "med.routine": { ko: "루틴 보기", en: "See my routine" },
+    "med.tapStart": { ko: "아래 시작하기를 누르면 호흡 안내가 함께 흘러요", en: "Press Begin and the breathing guide will lead" },
 
     "greet.morning": { ko: "좋은 아침이에요", en: "Good morning" },
     "greet.afternoon": { ko: "오후도 잘 보내고 계신가요?", en: "How is your afternoon going?" },
@@ -127,6 +201,18 @@
     "coach.chip5": { ko: "자꾸 미안한 마음이 들어요", en: "I keep feeling guilty" },
     "coach.chip6": { ko: "어디로 가야 할지 모르겠어요", en: "I don't know where to go" },
     "coach.chip7": { ko: "가족을 위해 기도하고 싶어요", en: "Pray for my family" },
+    "coach.chip1Mind": { ko: "오늘 너무 지쳐요", en: "I'm so worn out today" },
+    "coach.chip2Mind": { ko: "마음이 불안해요", en: "My heart is anxious" },
+    "coach.chip3Mind": { ko: "감사할 일이 있어요", en: "Something to be thankful for" },
+    "coach.chip4Mind": { ko: "외로워요", en: "I feel lonely" },
+    "coach.chip5Mind": { ko: "자꾸 미안한 마음이 들어요", en: "I keep feeling guilty" },
+    "coach.chip6Mind": { ko: "어디로 가야 할지 모르겠어요", en: "I don't know where to go" },
+    "coach.chip7Mind": { ko: "가족 생각이 자꾸 나요", en: "My family is on my mind" },
+    "coach.lineTitleMind": { ko: "마음챙김 한 줄", en: "A mindful line" },
+    "coach.prayCtaMind": { ko: "마음 명상 시작", en: "Begin a meditation" },
+    "coach.topicNoteMind": { ko: "{topic}으로 이어 갈게요.", en: "We'll continue with {topic}." },
+    "coach.emptyMind": { ko: "아직 나눈 이야기가 없어요. 아래에서 시작해 보세요.", en: "Nothing shared yet — start below." },
+    "coach.subMind": { ko: "지금 마음을 적어 주세요. 함께 호흡으로 이어 갈게요.", en: "Tell me where your heart is. We'll turn it into breathing." },
 
     "routine.title": { ko: "루틴 · Pi", en: "Routine & Pi" },
     "routine.streakLabel": { ko: "연속", en: "Streak" },
@@ -141,7 +227,10 @@
     "routine.fb.start": { ko: "오늘 첫걸음을 아직 안 뗐어요. 1분이면 충분해요.", en: "Today's first step is still waiting. One minute is enough." },
     "routine.fb.none": { ko: "아직 기록이 없어요. 오늘 마음을 고르고 1분 기도로 시작해 보세요.", en: "No record yet. Pick your heart and begin with one minute." },
     "routine.legend": { ko: "기도 · 묵주 · 말씀", en: "Prayer · Rosary · Word" },
+    "routine.legendMind": { ko: "호흡 · 명상 · 기록", en: "Breath · Meditation · Note" },
     "routine.missed": { ko: "쉼", en: "rest" },
+    "routine.fb.restartMind": { ko: "잠시 쉬어 갔네요. 오늘은 1분 호흡부터 다시 시작해요.", en: "You rested for a while. Start again with one minute of breathing." },
+    "routine.fb.noneMind": { ko: "아직 기록이 없어요. 오늘 마음을 고르고 1분 호흡으로 시작해 보세요.", en: "No record yet. Pick your heart and begin with one minute of breathing." },
 
     "pi.title": { ko: "Pi와 연결", en: "Connected to Pi" },
     "pi.sub": { ko: "기도 기록은 내 계정에, 작은 감사는 투명하게.", en: "Your prayer record on your account, small thanks given transparently." },
@@ -175,10 +264,24 @@
     "pi.solidAdd": { ko: "오늘의 기도로 한 사람이 더 함께했어요", en: "Your prayer added one more today" },
     "pi.reset": { ko: "내 기록 초기화", en: "Reset my data" },
     "pi.resetConfirm": { ko: "저장된 기도 기록과 Pi 기록을 모두 지울까요? 되돌릴 수 없어요.", en: "Delete all saved prayer and Pi records? This cannot be undone." },
+    "pi.resetConfirmMind": { ko: "저장된 마음 기록과 Pi 기록을 모두 지울까요? 되돌릴 수 없어요.", en: "Delete all saved mind and Pi records? This cannot be undone." },
     "pi.note": { ko: "이 프로토타입은 브라우저 로컬 저장소에만 기록해요. 실제 Pi 결제는 Pi Browser와 서버 승인 API가 있어야 해요.", en: "This prototype stores data only in your browser. Real Pi payments need Pi Browser and server approval endpoints." },
     "pi.demoHint": { ko: "일반 브라우저에서는 안전한 데모 시뮬레이션으로 동작해요.", en: "In a normal browser this runs as a safe demo simulation." },
     "pi.modeLive": { ko: "Pi Browser · 실결제", en: "Pi Browser · live" },
     "pi.modeDemoPay": { ko: "Pi Browser · 데모", en: "Pi Browser · demo" },
+    "pi.subMind": { ko: "마음의 기록은 내 계정에, 작은 응원은 투명하게.", en: "Your mind record on your account, small support given transparently." },
+    "pi.offerTitleMind": { ko: "마음 돌봄 응원", en: "Mind care support" },
+    "pi.offerDescMind": {
+      ko: "오늘의 마음 돌봄을 함께 이어가고 싶다면 작은 Pi로 응원해 주세요. 응원 내역은 투명하게 남습니다.",
+      en: "If you would like this mind care to keep going, send a small Pi of support. Every contribution is recorded openly."
+    },
+    "pi.memoPlaceholderMind": { ko: "오늘 마음에 남은 것", en: "What stayed with me today" },
+    "pi.offerBtnMind": { ko: "Pi로 응원하기", en: "Support with Pi" },
+    "pi.successMind": { ko: "응원이 기록되었어요", en: "Your support is recorded" },
+    "pi.demoSuccessMind": { ko: "데모 모드로 응원을 기록했어요 (실제 결제 없음)", en: "Recorded in demo mode (no real payment)" },
+    "pi.solidTitleMind": { ko: "글로벌 마음 돌봄", en: "Global Mind Care" },
+    "pi.solidDescMind": { ko: "오늘 함께 마음을 돌본 파이오니어", en: "Pioneers caring for their minds today" },
+    "pi.solidAddMind": { ko: "오늘의 마음으로 한 사람이 더 함께했어요", en: "Your session added one more today" },
 
     "minute.title": { ko: "1분 기도", en: "One-minute prayer" },
     "minute.start": { ko: "1분 시작하기", en: "Begin one minute" },
@@ -209,6 +312,10 @@
       message: {
         ko: "오늘은 마음이 조금 지쳐 있네요. 게을러서가 아니라, 오래 참아 왔기 때문이에요. 1분만 숨을 고르고 수고한 나를 위해 짧은 기도를 드려 보세요.",
         en: "Your heart is tired today. Not because you are lazy — because you have carried a lot for a long time. Breathe for one minute and offer a short prayer for the part of you that kept going."
+      },
+      mindMessage: {
+        ko: "오늘은 마음이 조금 지쳐 있네요. 게을러서가 아니라, 오래 애써 왔기 때문이에요. 1분만 숨을 고르고 수고한 나에게 다정한 말 한마디를 건네 보세요.",
+        en: "Your heart is tired today. Not because you are lazy — because you have carried a lot for a long time. Breathe for one minute and say something kind to the part of you that kept going."
       }
     },
     {
@@ -217,6 +324,10 @@
       message: {
         ko: "생각이 꼬리를 물고 돌아가고 있나요? 불안은 나를 지키려는 마음이 앞서는 신호예요. 손을 무릎에 두고 천천히 숨을 쉬며 '주님, 맡깁니다' 한마디면 충분해요.",
         en: "Are your thoughts looping? Anxiety is often your heart trying to protect you. Rest your hands on your knees, breathe slowly, and say one short prayer: “Lord, I place this in your hands.”"
+      },
+      mindMessage: {
+        ko: "생각이 꼬리를 물고 돌아가고 있나요? 불안은 나를 지키려는 마음이 앞서는 신호예요. 손을 무릎에 두고 천천히 숨을 쉬며, 지금 이 순간 나는 안전하다고 되뇌어 보세요.",
+        en: "Are your thoughts looping? Anxiety is often your heart trying to protect you. Rest your hands on your knees, breathe slowly, and remind yourself: right now, in this moment, I am safe."
       }
     },
     {
@@ -225,12 +336,20 @@
       message: {
         ko: "평온한 날이네요. 이런 날은 작은 감사 하나를 발견하기 좋아요. 오늘 나에게 선한 것을 하나 찾아 두면 마음의 중심이 더 단단해집니다.",
         en: "A calm day. These are good days for noticing one small gift. Name one good thing from today and your center will hold a little steadier."
+      },
+      mindMessage: {
+        ko: "평온한 날이네요. 이런 날은 작은 감사 하나를 발견하기 좋아요. 오늘 나에게 좋았던 것을 하나 찾아 두면 마음의 중심이 더 단단해집니다.",
+        en: "A calm day. These are good days for noticing one small gift. Name one good thing from today and your center will hold a little steadier."
       }
     },
     {
       key: "grateful", emoji: "🙏", mystery: "joyful",
       label: { ko: "감사", en: "Grateful" },
       message: {
+        ko: "감사가 마음에 있는 날이네요. 감사는 그냥 두면 사라지고, 말하면 자랍니다. 지금 떠오르는 그 한 가지를 소리 내어 말해 보세요.",
+        en: "Gratitude is here today. It fades when it stays silent and grows when it is spoken. Say the one thing out loud."
+      },
+      mindMessage: {
         ko: "감사가 마음에 있는 날이네요. 감사는 그냥 두면 사라지고, 말하면 자랍니다. 지금 떠오르는 그 한 가지를 소리 내어 말해 보세요.",
         en: "Gratitude is here today. It fades when it stays silent and grows when it is spoken. Say the one thing out loud."
       }
@@ -241,12 +360,20 @@
       message: {
         ko: "마음 한쪽이 허전한 순간이네요. 외로움은 사랑할 곳이 필요하다는 신호예요. 함께 계신다는 말씀 한 줄과 1분 기도로 곁을 만들어 보세요.",
         en: "A part of your heart feels empty right now. Loneliness is a sign that your heart has love to give. Take one line of Scripture and one minute of prayer, and let that be company."
+      },
+      mindMessage: {
+        ko: "마음 한쪽이 허전한 순간이네요. 외로움은 사랑할 곳이 필요하다는 신호예요. 1분 호흡으로 곁을 만들어 보세요. 이 시간만큼은 저도 함께 있을게요.",
+        en: "A part of your heart feels empty right now. Loneliness is a sign that your heart has love to give. Take one minute of breathing and let that be company — I will stay here with you."
       }
     },
     {
       key: "joyful", emoji: "✨", mystery: "joyful",
       label: { ko: "기쁨", en: "Joyful" },
       message: {
+        ko: "기쁨이 있는 하루네요. 기쁠 때의 마음은 오래 기억해 둘 만해요. 그 기쁨을 한 사람과 나누면 더 오래 갑니다.",
+        en: "There is joy in this day, and joy is worth remembering. Share it with one person and it will last longer."
+      },
+      mindMessage: {
         ko: "기쁨이 있는 하루네요. 기쁠 때의 마음은 오래 기억해 둘 만해요. 그 기쁨을 한 사람과 나누면 더 오래 갑니다.",
         en: "There is joy in this day, and joy is worth remembering. Share it with one person and it will last longer."
       }
@@ -555,7 +682,86 @@
     }
   };
 
-  /* ----------------------------------------------------------- Coach themes */
+  /* ------------------------------------------------------------- Mind lines */
+  /* The "오늘의 한 줄" of the mind-care mode. Scripture is what the Catholic mode
+     carries, so these are original, unattributed lines: warm, plain, and true
+     whether or not the reader believes anything. One turns up each day. */
+  var MIND_LINES = [
+    {
+      text: {
+        ko: "숨을 한 번 깊게 들이쉬는 것만으로도, 오늘의 나를 다시 만날 수 있어요.",
+        en: "One deep breath is enough to meet yourself again today."
+      }
+    },
+    {
+      text: {
+        ko: "마음이 복잡한 날은, 잠깐 멈추는 것만으로도 충분해요.",
+        en: "On a crowded day, simply stopping for a moment is enough."
+      }
+    },
+    {
+      text: {
+        ko: "지금 여기에 있다는 것. 그것이 오늘의 가장 작은 성취예요.",
+        en: "Being here, now — that is today's smallest achievement."
+      }
+    },
+    {
+      text: {
+        ko: "생각은 지나가는 구름 같아요. 붙잡지 않아도 괜찮아요.",
+        en: "Thoughts are passing clouds. You do not have to hold them."
+      }
+    },
+    {
+      text: {
+        ko: "애쓰지 않아도 괜찮은 시간이 하루에 한 번은 필요해요.",
+        en: "A day needs one stretch of time where trying is not required."
+      }
+    },
+    {
+      text: {
+        ko: "내 마음을 다그치지 않을 때, 마음은 조금씩 편안해져요.",
+        en: "When I stop hurrying my heart, it settles a little."
+      }
+    },
+    {
+      text: {
+        ko: "오늘 느낀 것은 그냥 느낀 채로 두어도 괜찮아요.",
+        en: "What you felt today may simply be left as it was felt."
+      }
+    },
+    {
+      text: {
+        ko: "작은 것 하나를 알아차리는 일이 마음을 돌보는 시작이에요.",
+        en: "Noticing one small thing is where caring for the mind begins."
+      }
+    },
+    {
+      text: {
+        ko: "숨이 들어오고 나가는 동안, 이 순간은 온전히 나의 것이에요.",
+        en: "While the breath comes and goes, this moment is wholly yours."
+      }
+    },
+    {
+      text: {
+        ko: "잘하고 있는지보다, 지금 어떤지에 귀를 기울여 보세요.",
+        en: "Listen to how you are, more than to how well you are doing."
+      }
+    },
+    {
+      text: {
+        ko: "마음에도 쉬어 가는 자리가 필요해요.",
+        en: "The mind needs places to rest along the way."
+      }
+    },
+    {
+      text: {
+        ko: "오늘 하루, 나에게 조금 더 다정해도 괜찮아요.",
+        en: "Today, you may be a little kinder to yourself."
+      }
+    }
+  ];
+
+  /* ------------------------------------------------------- Coach themes */
   /* Keyword rule for Korean: every keyword is a stem of at least two syllables
      that people actually type, never a bare syllable. Korean matches as a
      substring (조사 are glued on), so a short syllable fires inside unrelated
@@ -577,6 +783,18 @@
         ko: "의자에 깊게 앉아 어깨를 내리고, 숨을 네 번 천천히 쉬어 보세요. 그다음 “주님, 오늘은 여기까지 했습니다”라고 말해 보세요.",
         en: "Sit back in your chair, let your shoulders drop, and take four slow breaths. Then say: “Lord, this is what I could do today.”"
       },
+      mind: {
+        empathy: {
+          ko: "오늘 정말 많이 애쓰셨어요. 지금의 지침은 의지가 약해서가 아니라 오래 버텼기 때문이에요. 스스로를 몰아붙이지 않아도 괜찮습니다.",
+          en: "You have carried a lot today. This tiredness is not weak will — it is what long endurance feels like. You do not have to push yourself right now."
+        },
+        action: {
+          ko: "의자에 깊게 앉아 어깨를 내리고, 숨을 네 번 천천히 쉬어 보세요. 그다음 “오늘은 여기까지 했어요”라고 말해 보세요.",
+          en: "Sit back in your chair, let your shoulders drop, and take four slow breaths. Then say: “This is what I could do today.”"
+        },
+        line: { ko: "쉬는 것도 오늘 해야 할 일의 하나예요.", en: "Resting is one of today's tasks too." },
+        topic: "breath"
+      },
       verse: "rest",
       mystery: "sorrowful"
     },
@@ -592,6 +810,18 @@
       action: {
         ko: "손바닥을 무릎에 두고 4초 들이쉬고 6초 내쉬기를 다섯 번 해 보세요. 그다음 걱정 하나를 적고 옆에 “맡깁니다”라고 써 보세요.",
         en: "Rest your palms on your knees: breathe in for four, out for six, five times. Then write one worry down and beside it write “I place this in your hands.”"
+      },
+      mind: {
+        empathy: {
+          ko: "불안은 아직 오지 않은 일을 미리 견디느라 생기는 피로예요. 지금 이 순간, 당신은 안전합니다. 마음이 앞서가도 괜찮아요.",
+          en: "Anxiety is the fatigue of living through things that have not happened yet. Right now, in this moment, you are safe."
+        },
+        action: {
+          ko: "손바닥을 무릎에 두고 4초 들이쉬고 6초 내쉬기를 다섯 번 해 보세요. 그다음 걱정 하나를 적고 옆에 “지금은 여기까지”라고 써 보세요.",
+          en: "Rest your palms on your knees: breathe in for four, out for six, five times. Then write one worry down and beside it write “this is as far as it goes for now.”"
+        },
+        line: { ko: "아직 오지 않은 일은, 아직 내 몫이 아니에요.", en: "What has not happened yet is not yours to carry yet." },
+        topic: "breath"
       },
       verse: "peace",
       mystery: "sorrowful"
@@ -609,6 +839,18 @@
         ko: "잘못 하나를 떠올리고 “주님, 용서해 주세요. 다시 해 보겠습니다”라고 짧게 기도하세요. 그리고 자신에게도 똑같이 말해 주세요.",
         en: "Name one thing, and pray briefly: “Lord, forgive me. I will try again.” Then say the same words to yourself."
       },
+      mind: {
+        empathy: {
+          ko: "미안한 마음이 오래 머물고 있네요. 스스로를 벌하는 마음보다, 다음에 어떻게 할지가 더 오래 남습니다.",
+          en: "That sorry feeling has been staying with you a while. What you do next lasts longer than punishing yourself for what passed."
+        },
+        action: {
+          ko: "잘못 하나를 떠올리고 “이번엔 다르게 해 볼게요”라고 짧게 말해 보세요. 그리고 자신에게도 똑같이 말해 주세요.",
+          en: "Name one thing, and say briefly: “I will try it differently next time.” Then say the same words to yourself."
+        },
+        line: { ko: "나를 용서하는 연습도 마음 돌봄의 일부예요.", en: "Learning to forgive myself is part of caring for this mind." },
+        topic: "mindful"
+      },
       verse: "forgive",
       mystery: "sorrowful"
     },
@@ -624,6 +866,18 @@
       action: {
         ko: "지금 떠오르는 한 사람에게 짧은 안부를 보내 보세요. 그리고 그 사람을 위해 10초만 기도해 주세요.",
         en: "Send one short hello to the person who just came to mind. Then pray for them for ten seconds."
+      },
+      mind: {
+        empathy: {
+          ko: "혼자인 시간은 마음이 유난히 크게 들리는 때예요. 외로움은 사랑할 곳이 있다는 뜻이기도 합니다.",
+          en: "Time alone makes the heart sound louder. Loneliness also means there is love in you with somewhere to go."
+        },
+        action: {
+          ko: "지금 떠오르는 한 사람에게 짧은 안부를 보내 보세요. 그리고 그 사람을 10초만 마음에 담아 보세요.",
+          en: "Send one short hello to the person who just came to mind. Then hold them in your heart for ten seconds."
+        },
+        line: { ko: "연결은 가까이 있지 않아도 만들어질 수 있어요.", en: "Connection can be made without being close." },
+        topic: "gratitude"
       },
       verse: "lonely",
       mystery: "glorious"
@@ -641,6 +895,18 @@
         ko: "가족 중 한 사람의 이름을 소리 내어 부르고, 그 사람에게 지금 필요한 것 하나를 떠올려 보세요. 그다음 1분 동안 그 이름을 마음에 두고 기도해 보세요.",
         en: "Say the name of one family member out loud, then name one thing they need right now. Keep that name in your heart and pray for one minute."
       },
+      mind: {
+        empathy: {
+          ko: "가족이 마음에 가득하네요. 가까운 사이일수록 마음이 잘 닿지 않아 애가 타기도 하지요. 그 마음을 혼자 꾹 안고 있지 않아도 됩니다.",
+          en: "Your family is on your heart today. The closer people are, the more it can ache when words do not reach. You do not have to hold it alone."
+        },
+        action: {
+          ko: "가족 중 한 사람의 이름을 소리 내어 부르고, 그 사람에게 지금 필요한 것 하나를 떠올려 보세요. 그다음 1분 동안 그 이름을 마음에 두고 호흡해 보세요.",
+          en: "Say the name of one family member out loud, then name one thing they need right now. Keep that name in your heart and breathe for one minute."
+        },
+        line: { ko: "말하지 못한 마음은 마음속에서 천천히 자라요.", en: "Feelings without words still grow quietly in the heart." },
+        topic: "gratitude"
+      },
       verse: "blessing",
       mystery: "joyful"
     },
@@ -656,6 +922,18 @@
       action: {
         ko: "감사한 일 하나를 구체적으로 적고, 그 일에 함께한 사람을 위해 1분 기도해 주세요.",
         en: "Write one specific thing you are thankful for, then pray for one minute for someone who was part of it."
+      },
+      mind: {
+        empathy: {
+          ko: "감사가 마음에 차 있는 날이네요. 이 마음은 그냥 지나가면 금방 흐려지지만, 남겨 두면 오래 힘이 됩니다.",
+          en: "Your heart is full of thanks today. Left alone it fades quickly; written down, it keeps its strength."
+        },
+        action: {
+          ko: "감사한 일 하나를 구체적으로 적고, 그 일에 함께한 사람을 1분 동안 마음에 담아 보세요.",
+          en: "Write one specific thing you are thankful for, then hold the person who was part of it in your heart for one minute."
+        },
+        line: { ko: "감사는 적어 두면 다시 읽을 수 있는 마음이 돼요.", en: "Written down, gratitude becomes a page you can read again." },
+        topic: "gratitude"
       },
       verse: "thanks",
       mystery: "joyful"
@@ -673,6 +951,18 @@
         ko: "오늘 결정할 것 하나를 잠시 미루고, 1분 동안 “주님, 길을 보여 주세요”만 반복해 보세요.",
         en: "Set one decision down for a moment, and for one minute repeat only: “Lord, show me the way.”"
       },
+      mind: {
+        empathy: {
+          ko: "어디로 가야 할지 모를 때는, 방향을 정하기 전에 마음을 먼저 쉬게 해야 해요. 답은 조용한 곳에서 들립니다.",
+          en: "When you cannot see the way, rest the heart before choosing a direction. Answers are heard in quiet places."
+        },
+        action: {
+          ko: "오늘 결정할 것 하나를 잠시 미루고, 1분 동안 천천히 숨만 쉬어 보세요.",
+          en: "Set one decision down for a moment, and for one minute do nothing but breathe slowly."
+        },
+        line: { ko: "길은 서두르지 않을 때 더 잘 보여요.", en: "The way shows itself better when you do not rush it." },
+        topic: "mindful"
+      },
       verse: "trust",
       mystery: "luminous"
     },
@@ -689,6 +979,18 @@
         ko: "울컥하는 마음을 억지로 밀어내지 말고, 1분 동안 그대로 두고 기도해 보세요. “주님, 이 마음을 아십니다.”",
         en: "Do not push the feeling away. Hold it for one minute and pray: “Lord, you know this heart.”"
       },
+      mind: {
+        empathy: {
+          ko: "마음이 가라앉아 있네요. 슬픔은 약함이 아니라 사랑이 남긴 자리예요. 그 자리를 서둘러 지우지 않아도 됩니다.",
+          en: "Your heart is low. Sadness is not weakness — it is the place love left behind. You do not have to erase it quickly."
+        },
+        action: {
+          ko: "울컥하는 마음을 억지로 밀어내지 말고, 1분 동안 그대로 두고 숨을 쉬어 보세요.",
+          en: "Do not push the feeling away. Hold it for one minute and breathe."
+        },
+        line: { ko: "슬픔에도 머물 시간이 필요해요.", en: "Sadness needs time to stay, too." },
+        topic: "body"
+      },
       verse: "hope",
       mystery: "glorious"
     },
@@ -701,6 +1003,18 @@
       action: {
         ko: "1분 동안 숨을 세 번 천천히 쉬고, 지금 마음에 가장 남는 단어 하나를 골라 보세요. 그 단어를 기도에 담아 드리면 됩니다.",
         en: "Breathe slowly three times, then choose the one word that stays with you. Bring that word into prayer."
+      },
+      mind: {
+        empathy: {
+          ko: "이야기해 주셔서 고마워요. 지금 이 마음을 다 정리하지 않아도 괜찮아요. 함께 조용히 있어 볼게요.",
+          en: "Thank you for telling me. You do not have to sort all of this out now — let's be quiet together for a moment."
+        },
+        action: {
+          ko: "1분 동안 숨을 세 번 천천히 쉬고, 지금 마음에 가장 남는 단어 하나를 골라 보세요.",
+          en: "Breathe slowly three times, then choose the one word that stays with you."
+        },
+        line: { ko: "설명되지 않는 마음도 그대로 두어도 괜찮아요.", en: "A feeling you cannot explain may simply be left as it is." },
+        topic: "breath"
       },
       verse: "stillness",
       mystery: "luminous"
@@ -929,6 +1243,61 @@
     }
   };
 
+  /* -------------------------------------------------- 1-minute breathing */
+  /* The mind-care mode's minute: no scripture and no prayer, only the body,
+     the breath and one kind sentence to oneself. Same sixty seconds and the
+     same four-step rhythm as the prayer, so the sheet feels like the app. */
+  var MINDFUL_MINUTE = {
+    seconds: 60,
+    steps: [
+      {
+        title: { ko: "자리 잡기", en: "Settle in" },
+        text: {
+          ko: "의자에 편하게 앉아 발바닥을 바닥에 두고, 어깨의 힘을 천천히 빼 보세요. 지금 여기에 있는 것만으로 충분해요.",
+          en: "Sit comfortably, rest your feet on the floor, and let your shoulders drop. Being here is already enough."
+        }
+      },
+      {
+        title: { ko: "숨 알아차리기", en: "Notice the breath" },
+        text: {
+          ko: "코로 천천히 들이쉬고, 조금 길게 내쉬어요. 숨이 들어오고 나가는 감각에만 마음을 두어 보세요.",
+          en: "Breathe in slowly through your nose, and out a little longer. Keep your attention on the breath coming and going."
+        }
+      },
+      {
+        title: { ko: "몸의 감각", en: "Feel the body" },
+        text: {
+          ko: "손바닥과 발바닥에서 느껴지는 온기를 알아차려요. 생각이 흘러가면, 다시 숨으로 돌아오면 됩니다.",
+          en: "Notice the warmth in your palms and the soles of your feet. When thoughts drift, just come back to the breath."
+        }
+      },
+      {
+        title: { ko: "한마디 건네기", en: "One kind word" },
+        text: {
+          ko: "지금 내 마음에 ‘잘하고 있어요’라고 한마디 건네고, 천천히 눈을 떠 보세요.",
+          en: "Say to yourself, “you are doing fine,” and open your eyes slowly."
+        }
+      }
+    ]
+  };
+
+  /* ------------------------------------------------------ meditation mode */
+  /* Four things to rest on, and the 4-2-6 rhythm the breathing guide follows:
+     the circle fills on the in-breath, waits, and empties on the out-breath.
+     Twelve seconds a breath, so the count is the same whether the reader is on
+     a Korean phone or an English one. */
+  var MEDITATION = {
+    cycle: { inhale: 4, hold: 2, exhale: 6 },
+    durations: [3, 5, 10],
+    defaultDuration: 10,
+    topics: [
+      { key: "breath", label: "med.topic.breath", guide: "med.guide.breath" },
+      { key: "mindful", label: "med.topic.mindful", guide: "med.guide.mindful" },
+      { key: "body", label: "med.topic.body", guide: "med.guide.body" },
+      { key: "gratitude", label: "med.topic.gratitude", guide: "med.guide.gratitude" }
+    ]
+  };
+
   /* The four steps for a given heart; the generic set when none is chosen. */
   function minuteStepsFor(moodKey) {
     var set = moodKey ? MINUTE_PRAYER.byMood[moodKey] : null;
@@ -945,6 +1314,9 @@
     coachThemeOrder: ["tired", "anxious", "guilt", "lonely", "family", "grateful", "lost", "sad"],
     minute: MINUTE_PRAYER,
     minuteStepsFor: minuteStepsFor,
+    mindfulMinute: MINDFUL_MINUTE,
+    mindLines: MIND_LINES,
+    meditation: MEDITATION,
     langs: ["ko", "en"],
     defaults: { lang: "ko", mystery: "joyful", piAmount: 1 }
   };

@@ -85,6 +85,7 @@
     var verse = D.verses[theme.verse] || D.verses.stillness;
     var mysteryKey = theme.mystery || "luminous";
     var mystery = D.mysteries[mysteryKey];
+    var mind = theme.mind || null;
     return {
       theme: D.coachThemes[themeKey] ? themeKey : "fallback",
       empathy: theme.empathy[l],
@@ -95,7 +96,16 @@
       },
       mystery: mysteryKey,
       mysteryLabel: mystery.label[l],
-      mysteryShort: mystery.short[l]
+      mysteryShort: mystery.short[l],
+      // The mind-care mode reads the same feeling with its own words and no
+      // scripture at all: empathy, an action, one mindful line, and the
+      // meditation topic that fits.
+      mind: mind ? {
+        empathy: mind.empathy[l],
+        action: mind.action[l],
+        line: mind.line[l],
+        topic: mind.topic
+      } : null
     };
   }
 

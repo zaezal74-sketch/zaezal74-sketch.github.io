@@ -33,6 +33,10 @@
   }
 
   var lang = "ko";
+  // The two ways into the app. `mind` is the default and carries no faith
+  // language at all; `catholic` is the prayer life the app was built around.
+  // The chosen one lives in localStorage with the rest of the state.
+  var mode = "mind";
   function L(obj) {
     if (obj === null || obj === undefined) return "";
     if (typeof obj === "string") return obj;
@@ -49,6 +53,7 @@
     return {
       version: 1,
       lang: "ko",
+      mode: "mind",
       moodByDate: {},
       routine: {},
       coach: [],
@@ -78,6 +83,7 @@
       merged.coach = Array.isArray(saved.coach) ? saved.coach : [];
       merged.pi.offerings = Array.isArray(merged.pi.offerings) ? merged.pi.offerings : [];
       if (D.langs.indexOf(merged.lang) === -1) merged.lang = "ko";
+      if (merged.mode !== "mind" && merged.mode !== "catholic") merged.mode = base.mode;
       if (!D.mysteries[merged.rosary.mystery]) merged.rosary.mystery = "joyful";
       // Voice choices: keep an older save working, and never let a stale value
       // through to the speech profile.
@@ -119,8 +125,14 @@
   function cacheEls() {
     [
       "phoneFrame", "langToggle", "streakPill", "appMain", "todayLabel", "greeting",
+      "modeBar", "modeMindBtn", "modeCatholicBtn",
       "moodChips", "moodMessage", "homeMinuteLink", "homeVerseText", "homeVerseRef",
+      "homeMindLineText",
       "todoList", "todoProgress", "todoHint", "startPrayerBtn", "startRosaryBtn",
+      "startMeditationBtn",
+      "medTopics", "medGuide", "medOrb", "medTime", "medPhase", "medBreathCount",
+      "medRhythm", "medRhythmFill", "medDurations", "medStartBtn", "medResetBtn",
+      "medDone", "medAgainBtn", "medRoutineBtn", "medFocusBtn",
       "mysteryTabs", "rosaryRecNote", "mysteryStrip", "decadeDots", "rosaryStepInfo",
       "beads", "prayerLabel", "beadCounter", "prayerText", "stepProgress", "beadBtn",
       "seekBar", "seekThumb", "prevStepBtn", "nextStepBtn",
@@ -185,14 +197,51 @@
     return D.verses[VERSE_KEYS[dayOfYear(d) % VERSE_KEYS.length]];
   }
 
+  // The mind mode's daily line: its own little table, one turning up each day.
+  function mindLineOfDay() {
+    var lines = D.mindLines || [];
+    if (!lines.length) return { text: { ko: "", en: "" } };
+    return lines[dayOfYear(new Date()) % lines.length];
+  }
+
   /* -------------------------------------------------------------- routine */
+  /* The routine has room for both modes' small daily things in one day object,
+     so a reader who visits both screens keeps one streak: the Catholic three
+     (prayer · rosary · word) and the mind-care three (breath · meditation ·
+     journal). Each screen shows only its own three. */
+  var ROUTINE_KEYS = ["prayer", "rosary", "word", "breath", "meditation", "journal"];
+  var TODO_KEYS = {
+    catholic: ["prayer", "rosary", "word"],
+    mind: ["breath", "meditation", "journal"]
+  };
+  var TODO_LABEL = {
+    prayer: "home.todo.prayer",
+    rosary: "home.todo.rosary",
+    word: "home.todo.word",
+    breath: "home.todo.breath",
+    meditation: "home.todo.meditation",
+    journal: "home.todo.journal"
+  };
+  function todoMeta(key) {
+    if (key === "rosary") return "10 " + (lang === "ko" ? "알" : "beads");
+    if (key === "word") return lang === "ko" ? "말씀" : "verse";
+    if (key === "meditation") return "10 " + (lang === "ko" ? "분" : "min");
+    if (key === "journal") return lang === "ko" ? "한 줄" : "one line";
+    return "1 min";
+  }
+  function todoKeys() { return TODO_KEYS[mode] || TODO_KEYS.mind; }
+
   function routineFor(key) {
-    return state.routine[key] || { prayer: false, rosary: false, word: false };
+    return state.routine[key] || {};
   }
 
   function hasAny(key) {
     var r = state.routine[key];
-    return !!(r && (r.prayer || r.rosary || r.word));
+    if (!r) return false;
+    for (var i = 0; i < ROUTINE_KEYS.length; i++) {
+      if (r[ROUTINE_KEYS[i]]) return true;
+    }
+    return false;
   }
 
   function currentStreak() {
@@ -214,7 +263,7 @@
 
   function recordRoutine(key, opts) {
     var k = todayKey();
-    var day = state.routine[k] || (state.routine[k] = { prayer: false, rosary: false, word: false });
+    var day = state.routine[k] || (state.routine[k] = {});
     if (day[key]) return false;
     day[key] = true;
     refreshBest();
@@ -223,15 +272,14 @@
     renderHome();
     renderRoutine();
     if (opts && opts.silent !== true) {
-      var label = { prayer: "home.todo.prayer", rosary: "home.todo.rosary", word: "home.todo.word" }[key];
-      toast("✓ " + t(label));
+      toast("✓ " + t(TODO_LABEL[key]));
     }
     return true;
   }
 
   function toggleRoutine(key) {
     var k = todayKey();
-    var day = state.routine[k] || (state.routine[k] = { prayer: false, rosary: false, word: false });
+    var day = state.routine[k] || (state.routine[k] = {});
     day[key] = !day[key];
     refreshBest();
     save();
@@ -247,14 +295,28 @@
   }
 
   /* ------------------------------------------------------------------ i18n */
+  /* A node may carry one Korean/English key for each mode: data-i18n is the
+     Catholic copy, data-i18n-mind the mind-care copy. Only the label changes,
+     never the layout, so both modes share one DOM. */
+  function keyFor(node) {
+    var mindKey = node.getAttribute("data-i18n-mind");
+    return mode === "mind" && mindKey ? mindKey : node.getAttribute("data-i18n");
+  }
+
   function applyI18n() {
     var nodes = document.querySelectorAll("[data-i18n]");
     for (var i = 0; i < nodes.length; i++) {
-      nodes[i].textContent = t(nodes[i].getAttribute("data-i18n"));
+      nodes[i].textContent = t(keyFor(nodes[i]));
     }
     var ph = document.querySelectorAll("[data-i18n-placeholder]");
     for (var j = 0; j < ph.length; j++) {
-      ph[j].setAttribute("placeholder", t(ph[j].getAttribute("data-i18n-placeholder")));
+      var mindPh = ph[j].getAttribute("data-i18n-placeholder-mind");
+      var key = mode === "mind" && mindPh ? mindPh : ph[j].getAttribute("data-i18n-placeholder");
+      ph[j].setAttribute("placeholder", t(key));
+    }
+    var ar = document.querySelectorAll("[data-i18n-aria]");
+    for (var k = 0; k < ar.length; k++) {
+      ar[k].setAttribute("aria-label", t(ar[k].getAttribute("data-i18n-aria")));
     }
     document.documentElement.lang = lang;
     document.title = "SoulSync · " + (lang === "ko" ? "소울싱크" : "Faith, heart & rhythm");
@@ -284,23 +346,27 @@
       el.moodChips.appendChild(b);
     });
 
-    // message
+    // message — the mind mode speaks without any faith language
     var mood = null;
     D.moods.forEach(function (m) { if (m.key === selected) mood = m; });
-    el.moodMessage.textContent = mood ? L(mood.message) : t("home.pickMoodFirst");
+    var moodText = "";
+    if (mood) moodText = mode === "mind" && mood.mindMessage ? L(mood.mindMessage) : L(mood.message);
+    el.moodMessage.textContent = moodText || t("home.pickMoodFirst");
 
-    // verse
-    var v = verseOfDay();
-    el.homeVerseText.textContent = v.text[lang];
-    el.homeVerseRef.textContent = v.ref[lang];
+    // today's scripture (Catholic) or today's line (mind care)
+    if (mode === "mind") {
+      el.homeMindLineText.textContent = L(mindLineOfDay().text);
+    } else {
+      var v = verseOfDay();
+      el.homeVerseText.textContent = v.text[lang];
+      el.homeVerseRef.textContent = v.ref[lang];
+    }
 
     // todo
     var day = routineFor(todayKey());
-    var items = [
-      { key: "prayer", label: t("home.todo.prayer"), meta: "1 min" },
-      { key: "rosary", label: t("home.todo.rosary"), meta: "10 " + (lang === "ko" ? "알" : "beads") },
-      { key: "word", label: t("home.todo.word"), meta: lang === "ko" ? "말씀" : "verse" }
-    ];
+    var items = todoKeys().map(function (key) {
+      return { key: key, label: t(TODO_LABEL[key]), meta: todoMeta(key) };
+    });
     var doneCount = 0;
     el.todoList.innerHTML = "";
     items.forEach(function (it) {
@@ -331,7 +397,7 @@
     renderHome();
     var mood = null;
     D.moods.forEach(function (m) { if (m.key === key) mood = m; });
-    if (mood) {
+    if (mood && mode === "catholic") {
       // Keep the rosary recommendation in sync with today's heart.
       state.rosary.mystery = mood.mystery;
       save();
@@ -995,7 +1061,7 @@
   // while the sheet counts down with the voice on, and lets go the moment the
   // prayer ends, the sheet closes, the voice is muted or the phone goes away.
   function minuteAmbientLive() {
-    return minute.open && minute.running && !minute.finished &&
+    return mode === "catholic" && minute.open && minute.running && !minute.finished &&
       !!state.settings.voice && !!state.settings.ambient && !document.hidden;
   }
 
@@ -1166,6 +1232,7 @@
     save();
     buzz(8);
     renderRosary();
+    renderMeditation();
   }
 
   function setVoiceGender(gender) {
@@ -1189,11 +1256,30 @@
   }
 
   /* ---------------------------------------------------------------- minute */
-  // The 1-minute prayer follows today's heart: six four-step sets live in
-  // data.js, one per mood, with the shared steps as the fallback.
+  // The 1-minute sheet follows today's heart: six four-step sets live in
+  // data.js, one per mood, with the shared steps as the fallback. In the mind
+  // mode the same sixty seconds and the same sheet carry a breathing exercise
+  // instead — no scripture, no prayer, no church organ under it.
+  function minuteTotal() {
+    return mode === "mind" ? D.mindfulMinute.seconds : D.minute.seconds;
+  }
+
   function minuteSteps() {
+    if (mode === "mind") return D.mindfulMinute.steps;
     var steps = D.minuteStepsFor ? D.minuteStepsFor(todayMood()) : null;
     return steps && steps.length ? steps : D.minute.steps;
+  }
+
+  // The closing lines of the sheet differ by mode; everything else is shared.
+  function minuteDone(key) {
+    var mindKey = "minute." + key + "Mind";
+    return mode === "mind" && D.ui[mindKey] ? t(mindKey) : t("minute." + key);
+  }
+
+  // The mind mode reads its own words in the device voice only: the recorded
+  // files are the Catholic prayers and must never play over a breath exercise.
+  function minuteVoiceName(idx) {
+    return mode === "catholic" && recordedVoiceOn() ? minuteAudioName(idx) : null;
   }
 
   function minuteMoodEntry() {
@@ -1206,19 +1292,20 @@
 
   function renderMinute() {
     var steps = minuteSteps();
-    var idx = Math.min(steps.length - 1, Math.floor(minute.elapsed / (D.minute.seconds / steps.length)));
+    var total = minuteTotal();
+    var idx = Math.min(steps.length - 1, Math.floor(minute.elapsed / (total / steps.length)));
     var step = steps[idx];
     var mood = minuteMoodEntry();
     el.minuteFor.hidden = !mood;
     el.minuteFor.textContent = mood ? mood.emoji + " " + L(mood.label) : "";
     if (minute.finished) {
-      el.minuteStep.textContent = t("minute.doneTitle");
-      el.minuteText.textContent = t("minute.doneBody");
+      el.minuteStep.textContent = minuteDone("doneTitle");
+      el.minuteText.textContent = minuteDone("doneBody");
     } else {
       el.minuteStep.textContent = step.title[lang] + " · " + t("minute.step", { n: idx + 1, total: steps.length });
       el.minuteText.textContent = step.text[lang];
     }
-    var remaining = Math.max(0, D.minute.seconds - minute.elapsed);
+    var remaining = Math.max(0, total - minute.elapsed);
     el.minuteTime.textContent = minute.finished ? "✓" : String(remaining);
     el.breathRing.classList.toggle("is-breathing", minute.running && !minute.finished);
     el.minuteStartBtn.hidden = minute.running || minute.finished;
@@ -1232,7 +1319,7 @@
     minute.elapsed = 0;
     clearInterval(minute.timer);
     el.minuteSheet.hidden = false;
-    el.minuteTime.textContent = String(D.minute.seconds);
+    el.minuteTime.textContent = String(minuteTotal());
     el.minuteStartBtn.hidden = false;
     el.minuteDoneBtn.hidden = true;
     el.breathRing.classList.remove("is-breathing");
@@ -1260,14 +1347,14 @@
     clearInterval(minute.timer);
     minute.timer = setInterval(function () {
       minute.elapsed += 1;
-      if (minute.elapsed >= D.minute.seconds) {
+      if (minute.elapsed >= minuteTotal()) {
         finishMinute(true);
         return;
       }
       renderMinute();
       var steps = minuteSteps();
-      var stage = Math.floor(minute.elapsed / (D.minute.seconds / steps.length));
-      var prevStage = Math.floor((minute.elapsed - 1) / (D.minute.seconds / steps.length));
+      var stage = Math.floor(minute.elapsed / (minuteTotal() / steps.length));
+      var prevStage = Math.floor((minute.elapsed - 1) / (minuteTotal() / steps.length));
       if (stage !== prevStage) speakMinute();
     }, 1000);
     renderMinute();
@@ -1276,10 +1363,11 @@
   function speakMinute() {
     if (!state.settings.voice) return;
     var steps = minuteSteps();
-    var idx = Math.min(steps.length - 1, Math.floor(minute.elapsed / (D.minute.seconds / steps.length)));
+    var idx = Math.min(steps.length - 1, Math.floor(minute.elapsed / (minuteTotal() / steps.length)));
     var text = steps[idx].text[lang];
-    if (recordedVoiceOn()) {
-      if (playRecordedVoice(minuteAudioName(idx), function () { say(text, voiceProfile()); })) return;
+    var rec = minuteVoiceName(idx);
+    if (rec) {
+      if (playRecordedVoice(rec, function () { say(text, voiceProfile()); })) return;
     }
     if (!window.speechSynthesis) return;
     say(text, voiceProfile());
@@ -1290,16 +1378,220 @@
     minute.running = false;
     minute.finished = true;
     el.minuteTime.textContent = "✓";
-    el.minuteStep.textContent = t("minute.doneTitle");
-    el.minuteText.textContent = t("minute.doneBody");
+    el.minuteStep.textContent = minuteDone("doneTitle");
+    el.minuteText.textContent = minuteDone("doneBody");
     el.minuteStartBtn.hidden = true;
     el.minuteDoneBtn.hidden = true;
     el.breathRing.classList.remove("is-breathing");
     syncAmbient();
     if (completed) {
-      recordRoutine("prayer", { silent: true });
-      chime("finish");
+      recordRoutine(mode === "mind" ? "breath" : "prayer", { silent: true });
+      chime(mode === "mind" ? "soft" : "finish");
     }
+  }
+
+  /* ------------------------------------------------------------ meditation */
+  // The mind mode's second tab: four things to rest on, three lengths, and a
+  // breathing guide on the same kind of clock as the rosary — a hundred
+  // milliseconds a tick, paused exactly where it stopped. The 4-2-6 cycle is
+  // the guide: the circle grows on the in-breath, waits, and lets go on the
+  // out-breath, and the rhythm bar under it shows where in the cycle we are.
+  var med = {
+    topic: "breath",
+    minutes: (D.meditation && D.meditation.defaultDuration) || 10,
+    running: false,
+    finished: false,
+    elapsed: 0,
+    timer: null
+  };
+  var MED_CYCLE = (D.meditation && D.meditation.cycle) || { inhale: 4, hold: 2, exhale: 6 };
+  var MED_CYCLE_LEN = MED_CYCLE.inhale + MED_CYCLE.hold + MED_CYCLE.exhale;
+
+  function mmss(seconds) {
+    var s = Math.max(0, Math.ceil(seconds));
+    return pad2(Math.floor(s / 60)) + ":" + pad2(s % 60);
+  }
+
+  function medTopic(key) {
+    var list = D.meditation.topics;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].key === key) return list[i];
+    }
+    return list[0];
+  }
+
+  function medTotal() { return med.minutes * 60; }
+
+  function medPhaseAt(seconds) {
+    var pos = seconds % MED_CYCLE_LEN;
+    if (pos < MED_CYCLE.inhale) return { key: "inhale", frac: pos / MED_CYCLE.inhale };
+    pos -= MED_CYCLE.inhale;
+    if (pos < MED_CYCLE.hold) return { key: "hold", frac: pos / MED_CYCLE.hold };
+    pos -= MED_CYCLE.hold;
+    return { key: "exhale", frac: pos / MED_CYCLE.exhale };
+  }
+
+  function easeInOut(p) { return p * p * (3 - 2 * p); }
+
+  function paintMeditation() {
+    var total = medTotal();
+    var time = mmss(Math.max(0, total - med.elapsed));
+    el.medTime.textContent = med.finished ? "✓" : time;
+    el.medOrb.setAttribute("aria-label", t("med.remaining", { time: time }));
+
+    var ph = medPhaseAt(med.elapsed);
+    var scale = 0.9;
+    if (med.running) {
+      if (ph.key === "inhale") scale = 0.86 + 0.14 * easeInOut(ph.frac);
+      else if (ph.key === "hold") scale = 1;
+      else scale = 1 - 0.14 * easeInOut(ph.frac);
+    }
+    el.medOrb.style.setProperty("--orb", scale.toFixed(3));
+
+    var phase;
+    if (med.finished) phase = t("med.doneTitle");
+    else if (med.running) phase = t("med." + ph.key);
+    else if (med.elapsed > 0) phase = t("med.pause");
+    else phase = t("med.ready");
+    el.medPhase.textContent = phase;
+
+    el.medBreathCount.textContent = med.finished
+      ? ""
+      : (med.running
+        ? t("med.breathCount", { n: Math.floor(med.elapsed / MED_CYCLE_LEN) + 1 })
+        : t("med.hint"));
+
+    var segs = el.medRhythm.querySelectorAll("[data-phase]");
+    for (var i = 0; i < segs.length; i++) {
+      segs[i].classList.toggle("is-active", med.running && segs[i].getAttribute("data-phase") === ph.key);
+    }
+    var fill = med.running ? ((med.elapsed % MED_CYCLE_LEN) / MED_CYCLE_LEN) * 100 : 0;
+    el.medRhythmFill.style.width = fill.toFixed(1) + "%";
+
+    el.medStartBtn.textContent = med.running
+      ? t("med.pause")
+      : (med.finished ? t("med.again") : (med.elapsed > 0 ? t("med.resume") : t("med.start")));
+    el.medDone.hidden = !med.finished;
+  }
+
+  function renderMeditation() {
+    var topics = D.meditation.topics;
+    if (el.medTopics.childElementCount !== topics.length) {
+      el.medTopics.innerHTML = "";
+      topics.forEach(function (tp) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "seg";
+        b.setAttribute("data-topic", tp.key);
+        el.medTopics.appendChild(b);
+      });
+    }
+    var btns = el.medTopics.querySelectorAll(".seg");
+    for (var i = 0; i < btns.length; i++) {
+      var key = btns[i].getAttribute("data-topic");
+      btns[i].textContent = t(medTopic(key).label);
+      btns[i].classList.toggle("is-active", key === med.topic);
+      btns[i].setAttribute("aria-pressed", key === med.topic ? "true" : "false");
+    }
+
+    var durs = D.meditation.durations;
+    if (el.medDurations.childElementCount !== durs.length) {
+      el.medDurations.innerHTML = "";
+      durs.forEach(function (n) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "med-dur";
+        b.setAttribute("data-minutes", String(n));
+        el.medDurations.appendChild(b);
+      });
+    }
+    var dbtns = el.medDurations.querySelectorAll(".med-dur");
+    for (var j = 0; j < dbtns.length; j++) {
+      var mins = Number(dbtns[j].getAttribute("data-minutes"));
+      dbtns[j].textContent = t("med.min" + mins);
+      dbtns[j].classList.toggle("is-active", mins === med.minutes);
+      dbtns[j].setAttribute("aria-pressed", mins === med.minutes ? "true" : "false");
+    }
+
+    el.medGuide.textContent = t(medTopic(med.topic).guide);
+    el.medFocusBtn.setAttribute("aria-pressed", state.settings.focus ? "true" : "false");
+    el.medFocusBtn.setAttribute("aria-label", t(state.settings.focus ? "rosary.focusOff" : "rosary.focusOn"));
+    el.phoneFrame.classList.toggle("focus-mode", !!state.settings.focus);
+    paintMeditation();
+  }
+
+  function medTick() {
+    if (!med.running) return;
+    med.elapsed += 0.1;
+    if (med.elapsed >= medTotal() - 0.05) {
+      finishMeditation();
+      return;
+    }
+    paintMeditation();
+  }
+
+  function startMeditation() {
+    if (med.running) { pauseMeditation(); return; }
+    if (med.finished || med.elapsed >= medTotal()) {
+      med.elapsed = 0;
+      med.finished = false;
+    }
+    med.running = true;
+    ensureAudioCtx(); // the tap itself is the gesture the first quiet bell needs
+    chime("soft");
+    buzz(10);
+    clearInterval(med.timer);
+    med.timer = setInterval(medTick, 100);
+    paintMeditation();
+  }
+
+  function pauseMeditation() {
+    if (!med.running) return;
+    med.running = false;
+    clearInterval(med.timer);
+    med.timer = null;
+    paintMeditation();
+  }
+
+  function resetMeditation() {
+    clearInterval(med.timer);
+    med.timer = null;
+    med.running = false;
+    med.finished = false;
+    med.elapsed = 0;
+    paintMeditation();
+  }
+
+  function finishMeditation() {
+    clearInterval(med.timer);
+    med.timer = null;
+    med.running = false;
+    med.finished = true;
+    med.elapsed = medTotal();
+    paintMeditation();
+    chime("finish");
+    recordRoutine("meditation", { silent: true });
+    toast("🌿 " + t("med.doneTitle"));
+  }
+
+  function setMedTopic(key) {
+    if (!key || key === med.topic) return;
+    med.topic = key;
+    buzz(6);
+    renderMeditation();
+  }
+
+  function setMedMinutes(n) {
+    if (!n || n === med.minutes) return;
+    med.minutes = n;
+    // A new length starts the count over; a running session would otherwise
+    // jump to a different remaining time mid-breath.
+    clearInterval(med.timer);
+    med.timer = null;
+    med.running = false;
+    med.finished = false;
+    med.elapsed = 0;
+    renderMeditation();
   }
 
   /* ----------------------------------------------------------------- COACH */
@@ -1327,17 +1619,35 @@
         if (!reply) return;
         var card = document.createElement("div");
         card.className = "coach-reply";
-        var html = '<p class="empathy">' + escapeHtml(reply.empathy) + "</p>";
+        // Same empathy and action, but the mind mode closes on a mindful line
+        // and offers a meditation, while the Catholic mode offers scripture and
+        // the mystery that fits the feeling.
+        var mind = mode === "mind" && reply.mind ? reply.mind : null;
+        var empathy = mind ? mind.empathy : reply.empathy;
+        var action = mind ? mind.action : reply.action;
+        var html = '<p class="empathy">' + escapeHtml(empathy) + "</p>";
         html += '<p class="section-label">' + t("coach.actionLabel") + "</p>";
-        html += '<div class="action-box">' + escapeHtml(reply.action) + "</div>";
-        html += '<p class="section-label">' + t("coach.verseTitle") + "</p>";
-        html += '<div class="verse-box"><p class="v-text">' + escapeHtml(reply.verse.text) + "</p>" +
-          '<p class="v-ref">' + escapeHtml(reply.verse.ref) + "</p></div>";
-        html += '<div class="reply-actions">' +
-          '<button class="btn btn-primary" type="button" data-pray="' + reply.mystery + '">' +
-          t("coach.prayCta") + "</button>" +
-          '<span class="reply-mystery">' + escapeHtml(t("coach.mysteryNote", { mystery: reply.mysteryShort })) + "</span>" +
-          "</div>";
+        html += '<div class="action-box">' + escapeHtml(action) + "</div>";
+        if (mind) {
+          html += '<p class="section-label">' + t("coach.lineTitleMind") + "</p>";
+          html += '<div class="verse-box mind-verse-box"><p class="v-text">' + escapeHtml(mind.line) + "</p></div>";
+          var topic = mind.topic || "breath";
+          html += '<div class="reply-actions">' +
+            '<button class="btn btn-primary" type="button" data-medit="' + topic + '">' +
+            t("coach.prayCtaMind") + "</button>" +
+            '<span class="reply-mystery">' +
+            escapeHtml(t("coach.topicNoteMind", { topic: t(medTopic(topic).label) })) + "</span>" +
+            "</div>";
+        } else {
+          html += '<p class="section-label">' + t("coach.verseTitle") + "</p>";
+          html += '<div class="verse-box"><p class="v-text">' + escapeHtml(reply.verse.text) + "</p>" +
+            '<p class="v-ref">' + escapeHtml(reply.verse.ref) + "</p></div>";
+          html += '<div class="reply-actions">' +
+            '<button class="btn btn-primary" type="button" data-pray="' + reply.mystery + '">' +
+            t("coach.prayCta") + "</button>" +
+            '<span class="reply-mystery">' + escapeHtml(t("coach.mysteryNote", { mystery: reply.mysteryShort })) + "</span>" +
+            "</div>";
+        }
         card.innerHTML = html;
         el.coachThread.appendChild(card);
       });
@@ -1349,8 +1659,10 @@
       var c = document.createElement("button");
       c.type = "button";
       c.className = "quick-chip";
-      c.textContent = t(key);
-      c.setAttribute("data-chip", t(key));
+      var mindKey = key + "Mind";
+      var label = mode === "mind" && D.ui[mindKey] ? t(mindKey) : t(key);
+      c.textContent = label;
+      c.setAttribute("data-chip", label);
       el.coachChips.appendChild(c);
     });
     scrollThread();
@@ -1415,7 +1727,7 @@
       var cell = document.createElement("div");
       cell.className = "day-cell" + (i === 0 ? " is-today" : "");
       var dots = "";
-      ["prayer", "rosary", "word"].forEach(function (f) {
+      todoKeys().forEach(function (f) {
         dots += '<i class="' + f + (day[f] ? " on" : "") + '"></i>';
       });
       cell.innerHTML =
@@ -1428,11 +1740,9 @@
     // today's checklist
     var day = routineFor(todayKey());
     el.routineTodayList.innerHTML = "";
-    [
-      { key: "prayer", label: t("home.todo.prayer") },
-      { key: "rosary", label: t("home.todo.rosary") },
-      { key: "word", label: t("home.todo.word") }
-    ].forEach(function (it) {
+    todoKeys().map(function (key) {
+      return { key: key, label: t(TODO_LABEL[key]) };
+    }).forEach(function (it) {
       var done = !!day[it.key];
       var li = document.createElement("li");
       li.className = "todo-item" + (done ? " is-done" : "");
@@ -1446,14 +1756,14 @@
     });
 
     // feedback
-    var doneToday = ["prayer", "rosary", "word"].filter(function (k) { return day[k]; }).length;
+    var doneToday = todoKeys().filter(function (k) { return day[k]; }).length;
     var anyHistory = Object.keys(state.routine).some(function (k) { return hasAny(k); });
     var key;
-    if (!anyHistory) key = "routine.fb.none";
+    if (!anyHistory) key = mode === "mind" ? "routine.fb.noneMind" : "routine.fb.none";
     else if (doneToday === 3) key = "routine.fb.good";
     else if (streak >= 2) key = "routine.fb.steady";
     else if (doneToday > 0) key = "routine.fb.steady";
-    else if (anyHistory) key = "routine.fb.restart";
+    else if (anyHistory) key = mode === "mind" ? "routine.fb.restartMind" : "routine.fb.restart";
     else key = "routine.fb.start";
     el.routineFeedback.textContent = t(key);
 
@@ -1521,8 +1831,9 @@
       state.pi.offerings.slice(0, 3).forEach(function (o) {
         var when = new Date(o.at);
         var item = document.createElement("li");
+        var fallback = t(mode === "mind" ? "pi.offerTitleMind" : "pi.offerTitle");
         item.innerHTML =
-          "<span>" + escapeHtml(o.memo || t("pi.offerTitle")) + "</span>" +
+          "<span>" + escapeHtml(o.memo || fallback) + "</span>" +
           '<span class="amt">' + o.amount + " π</span>" +
           '<span class="when">' + pad2(when.getHours()) + ":" + pad2(when.getMinutes()) + "</span>";
         el.piRecentList.appendChild(item);
@@ -1588,7 +1899,9 @@
       el.piOfferBtn.disabled = false;
       el.piMemo.value = "";
       el.piStatus.className = "pi-status is-ok";
-      el.piStatus.textContent = res.mode === "pi" ? t("pi.success") : t("pi.demoSuccess");
+      el.piStatus.textContent = res.mode === "pi"
+        ? t(mode === "mind" ? "pi.successMind" : "pi.success")
+        : t(mode === "mind" ? "pi.demoSuccessMind" : "pi.demoSuccess");
       chime("finish");
       renderPi();
     }).catch(function (err) {
@@ -1604,14 +1917,14 @@
   }
 
   function resetData() {
-    if (!window.confirm(t("pi.resetConfirm"))) return;
+    if (!window.confirm(t(mode === "mind" ? "pi.resetConfirmMind" : "pi.resetConfirm"))) return;
     try { window.localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
     state = defaultState();
     state.lang = lang;
     rosary = window.SS_ROSARY.create(state.rosary.mystery);
     piAmount = 1;
     save();
-    renderAll();
+    applyMode(state.mode);
     toast(t("pi.reset"));
   }
 
@@ -1630,6 +1943,8 @@
         syncAmbient();
       }
     }
+    // A meditation paused on the way out keeps its place the same way.
+    if (activeTab === "meditation" && name !== "meditation") pauseMeditation();
     activeTab = name;
     var views = document.querySelectorAll(".view");
     for (var i = 0; i < views.length; i++) {
@@ -1650,7 +1965,61 @@
       renderRoutine();
     }
     if (name === "rosary") renderRosary();
+    if (name === "meditation") renderMeditation();
     if (name === "coach") scrollThread();
+  }
+
+  /* ------------------------------------------------------------------ mode */
+  // The second tab, the hero plate, the copy and the three daily things all
+  // follow the mode. Switching never throws work away: a paused rosary keeps
+  // its bead, a paused meditation keeps its minute.
+  var MODE_TAB = { mind: "meditation", catholic: "rosary" };
+
+  function renderModeBar() {
+    if (!el.modeBar) return;
+    var btns = el.modeBar.querySelectorAll("[data-mode]");
+    for (var i = 0; i < btns.length; i++) {
+      var on = btns[i].getAttribute("data-mode") === mode;
+      btns[i].classList.toggle("is-active", on);
+      btns[i].setAttribute("aria-selected", on ? "true" : "false");
+      btns[i].tabIndex = on ? 0 : -1;
+    }
+  }
+
+  function applyMode(next, opts) {
+    var want = next === "catholic" ? "catholic" : "mind";
+    var changed = want !== mode;
+    mode = want;
+    state.mode = mode;
+    save();
+
+    document.body.setAttribute("data-mode", mode);
+    renderModeBar();
+
+    var tabs = el.tabbar ? el.tabbar.querySelectorAll(".tab") : [];
+    if (tabs[1]) tabs[1].setAttribute("data-tab", MODE_TAB[mode]);
+
+    var onRosary = activeTab === "rosary";
+    var onMeditation = activeTab === "meditation";
+    var leaving = (mode === "mind" && onRosary) || (mode === "catholic" && onMeditation);
+    if (mode === "mind" && onRosary) {
+      if (auto.on) pauseAuto();
+      stopSpeech();
+      rosaryLive = false;
+      ambientManual = false;
+      syncAmbient();
+    }
+    if (mode === "catholic" && onMeditation) pauseMeditation();
+
+    applyI18n();
+    renderAll();
+    if (leaving) switchTab("home");
+
+    if (opts && opts.toast && changed) {
+      toast((mode === "mind" ? "🌿 " : "✝ ") +
+        t(mode === "mind" ? "mode.switchedMind" : "mode.switchedCatholic"));
+    }
+    return changed;
   }
 
   /* ------------------------------------------------------------------ init */
@@ -1666,6 +2035,7 @@
     renderHeader();
     renderHome();
     renderRosary();
+    renderMeditation();
     renderCoach();
     renderRoutine();
     if (minute.open) renderMinute();
@@ -1675,6 +2045,15 @@
   function bindEvents() {
     el.langToggle.addEventListener("click", function () {
       setLanguage(lang === "ko" ? "en" : "ko");
+    });
+
+    // The two ways in: one tap swaps the whole screen, and the choice is kept
+    // for the next visit.
+    el.modeBar.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-mode]");
+      if (!btn) return;
+      buzz(8);
+      applyMode(btn.getAttribute("data-mode"), { toast: true });
     });
 
     el.tabbar.addEventListener("click", function (e) {
@@ -1705,6 +2084,7 @@
 
     el.startPrayerBtn.addEventListener("click", openMinute);
     el.homeMinuteLink.addEventListener("click", openMinute);
+    el.startMeditationBtn.addEventListener("click", function () { switchTab("meditation"); });
     el.startRosaryBtn.addEventListener("click", function () {
       var mood = todayMood();
       if (mood) {
@@ -1722,6 +2102,24 @@
       var b = e.target.closest(".seg");
       if (b) setMystery(b.getAttribute("data-mystery"));
     });
+
+    /* ------------------------------------------------------- meditation */
+    el.medTopics.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-topic]");
+      if (b) setMedTopic(b.getAttribute("data-topic"));
+    });
+    el.medDurations.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-minutes]");
+      if (b) setMedMinutes(Number(b.getAttribute("data-minutes")));
+    });
+    el.medStartBtn.addEventListener("click", startMeditation);
+    el.medResetBtn.addEventListener("click", function () { resetMeditation(); buzz(6); });
+    el.medAgainBtn.addEventListener("click", function () {
+      resetMeditation();
+      startMeditation();
+    });
+    el.medRoutineBtn.addEventListener("click", function () { switchTab("routine"); });
+    el.medFocusBtn.addEventListener("click", toggleFocus);
 
     el.beadBtn.addEventListener("click", function () {
       var btn = el.beadBtn;
@@ -1789,6 +2187,12 @@
       if (chip) sendCoach(chip.getAttribute("data-chip"));
     });
     el.coachThread.addEventListener("click", function (e) {
+      var medBtn = e.target.closest("[data-medit]");
+      if (medBtn) {
+        setMedTopic(medBtn.getAttribute("data-medit"));
+        switchTab("meditation");
+        return;
+      }
       var btn = e.target.closest("[data-pray]");
       if (!btn) return;
       var key = btn.getAttribute("data-pray");
@@ -1850,9 +2254,8 @@
       // The SDK can arrive a moment after start-up inside Pi Browser.
       renderPi();
     });
-    applyI18n();
     bindEvents();
-    renderAll();
+    applyMode(state.mode || "mind");
     switchTab("home");
     // Reflect the live/demo Pi environment in the routine header.
     renderPi();
@@ -1873,7 +2276,27 @@
     t: t,
     lang: function () { return lang; },
     setLanguage: setLanguage,
+    mode: function () { return mode; },
+    applyMode: applyMode,
     switchTab: switchTab,
+    // The meditation session, so a check can read the breath and the clock
+    // without waiting ten real minutes.
+    meditation: function () {
+      return {
+        topic: med.topic,
+        minutes: med.minutes,
+        running: med.running,
+        finished: med.finished,
+        elapsed: med.elapsed,
+        total: medTotal(),
+        cycle: MED_CYCLE
+      };
+    },
+    startMeditation: startMeditation,
+    pauseMeditation: pauseMeditation,
+    resetMeditation: resetMeditation,
+    setMedTopic: setMedTopic,
+    setMedMinutes: setMedMinutes,
     selectMood: selectMood,
     advanceRosary: advanceRosary,
     startAuto: startAuto,
