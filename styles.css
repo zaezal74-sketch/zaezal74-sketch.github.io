@@ -1660,6 +1660,9 @@ body[data-mode="catholic"] [data-mode-only="mind"] { display: none !important; }
     0 10px 18px -14px rgba(58, 38, 104, .95);
 }
 .mode-opt:active { transform: scale(.985); }
+/* The switch is the first screen's furniture: the prayer and meditation
+   screens keep the height their own design was tuned to. */
+body:not([data-tab="home"]) .mode-bar { display: none; }
 
 /* The mind mode's plate: nature and light instead of the chapel. Same 138px
    band, same ivory scrim, same ink — only the photograph changes. */

@@ -1825,7 +1825,7 @@
     if (!state.pi.offerings.length) {
       var li = document.createElement("li");
       li.className = "recent-empty";
-      li.textContent = t("pi.noRecent");
+      li.textContent = t(mode === "mind" ? "pi.noRecentMind" : "pi.noRecent");
       el.piRecentList.appendChild(li);
     } else {
       state.pi.offerings.slice(0, 3).forEach(function (o) {
@@ -1946,6 +1946,9 @@
     // A meditation paused on the way out keeps its place the same way.
     if (activeTab === "meditation" && name !== "meditation") pauseMeditation();
     activeTab = name;
+    // The mode bar belongs to the first screen: hiding it elsewhere gives the
+    // rosary and meditation screens back the height v1 was tuned to.
+    document.body.setAttribute("data-tab", name);
     var views = document.querySelectorAll(".view");
     for (var i = 0; i < views.length; i++) {
       views[i].classList.toggle("is-active", views[i].getAttribute("data-view") === name);

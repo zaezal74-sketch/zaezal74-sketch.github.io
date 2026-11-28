@@ -257,6 +257,8 @@
     "pi.needConnect": { ko: "먼저 Pi로 로그인해 주세요.", en: "Sign in with Pi first." },
     "pi.recent": { ko: "최근 봉헌", en: "Recent offerings" },
     "pi.noRecent": { ko: "아직 봉헌 기록이 없어요", en: "No offerings yet" },
+    "pi.recentMind": { ko: "최근 응원", en: "Recent support" },
+    "pi.noRecentMind": { ko: "아직 응원 기록이 없어요", en: "No support yet" },
     "pi.solidTitle": { ko: "글로벌 묵주기도 연대", en: "Global Rosary Solidarity" },
     "pi.solidDesc": { ko: "오늘 함께 기도한 파이오니어", en: "Pioneers praying with you today" },
     "pi.solidNote": { ko: "데모 모드에서는 예시 숫자로 표시돼요.", en: "Shown as a sample number in demo mode." },
