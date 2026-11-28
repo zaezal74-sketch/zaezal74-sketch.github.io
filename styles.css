@@ -335,7 +335,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 /* -------------------------------------------------------------------- hero */
 .hero { padding: 4px 2px 18px; }
-.date-line { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+/* One step up from 11.5px: the date is the first line the eye meets on the
+   home plate and read too faint on a phone. 13px keeps the caps' airiness
+   without turning the line into a heading. */
+.date-line { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
 /* 800 at -.025em read as a heavy block on the home screen ("너무 답답해").
    One step down to 600, a touch smaller at 21px, and near-neutral tracking
    with a taller line so the greeting feels calm and airy instead of dense. */
@@ -360,9 +363,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 170px;
+  min-height: 138px;
   margin: calc(-1 * var(--main-pad)) calc(-1 * var(--main-pad)) 0;
-  padding: 16px calc(var(--main-pad) + 2px) 24px;
+  padding: 12px calc(var(--main-pad) + 2px) 18px;
   color: var(--hero-ink);
 }
 /* Three washes over the picture: a warm bloom where the sun crosses the glass,
@@ -407,7 +410,7 @@ body[data-hero="evening"] { --hero-photo: url("assets/hero-evening.webp"); }
 #view-home .hero > * { position: relative; z-index: 1; }
 #view-home .hero .date-line {
   color: var(--hero-gold);
-  letter-spacing: .14em;
+  letter-spacing: .12em;
   text-shadow: 0 1px 8px var(--hero-halo);
 }
 #view-home .hero h2 {
@@ -1613,7 +1616,7 @@ body[data-hero="evening"] { --hero-photo: url("assets/hero-evening.webp"); }
   .app-main { --main-pad: 14px; padding: var(--main-pad) var(--main-pad) 22px; }
   .app-main.is-coach { padding-bottom: 0; }
   .hero h2 { font-size: 19.5px; }
-  #view-home .hero { min-height: 160px; padding-bottom: 20px; }
+  #view-home .hero { min-height: 128px; padding-bottom: 14px; }
   .chip-btn { font-size: 11px; }
   .vseg { font-size: 11px; min-height: 30px; padding: 0 5px; }
   .voice-label { min-width: 30px; font-size: 11px; }
