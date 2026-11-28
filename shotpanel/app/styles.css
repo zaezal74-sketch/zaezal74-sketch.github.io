@@ -1728,7 +1728,13 @@ body[data-mode="mind"][data-hero="evening"] { --hero-photo: url("assets/hero-min
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
-.med-rhythm { margin: 13px 2px 2px; }
+.med-rhythm {
+  margin: 14px 0 2px;
+  padding: 9px 11px 11px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface-2) 62%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
 .rhythm-labels { display: grid; grid-template-columns: 4fr 2fr 6fr; gap: 4px; }
 .rhythm-seg {
   display: flex;
@@ -1747,16 +1753,16 @@ body[data-mode="mind"][data-hero="evening"] { --hero-photo: url("assets/hero-min
 .rhythm-track {
   position: relative;
   display: flex;
-  height: 8px;
-  margin-top: 5px;
+  height: 10px;
+  margin-top: 6px;
   border-radius: 999px;
   overflow: hidden;
   background: var(--surface-2);
 }
 .rhythm-zone { height: 100%; }
-.z-in { flex: 4; background: rgba(124, 92, 186, .16); }
-.z-hold { flex: 2; background: rgba(224, 164, 88, .20); }
-.z-out { flex: 6; background: rgba(124, 92, 186, .09); }
+.z-in { flex: 4; background: rgba(124, 92, 186, .22); }
+.z-hold { flex: 2; background: rgba(224, 164, 88, .26); }
+.z-out { flex: 6; background: rgba(124, 92, 186, .12); }
 .rhythm-fill {
   position: absolute;
   inset: 0 auto 0 0;
